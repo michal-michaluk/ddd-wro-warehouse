@@ -1,8 +1,7 @@
 # ddd-wro-warehouse
 Warehouse model developed during http://www.meetup.com/DDD-WRO/ meetings.
 
-Domain
-A producer of plastic parts for automotive industry and household devices, manages their storage "manually" (with paper documents) and without managing the place where the things are stored. 
+A producer of plastic parts for automotive industry and household devices, controls their storage "manually" (with paper documents) and without managing the place where the things are stored. 
 
 The storage supplies a production process with components and keeps the made products before sending them to customer.
 
