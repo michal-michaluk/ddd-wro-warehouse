@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.Matchers.any;
+
 /**
  * Created by michal on 08.06.2016.
  */
@@ -31,6 +33,9 @@ public class PaletteCompletionAndStoringSteps {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(
+                locationsPicker.sagestLocationFor(any(PaletteLabel.class))
+        ).thenReturn("A-32-3");
     }
 
     @When("^label for new palette is printed$")
@@ -60,7 +65,8 @@ public class PaletteCompletionAndStoringSteps {
     @Then("^preferred location is proposed$")
     public void preferredLocationIsProposed() throws Throwable {
         NewPaletteReadyToStore event = captor.getValue();
-        Assertions.assertThat(event.getPreferredLocation()).isNotEmpty();
+        Assertions.assertThat(event.getPreferredLocation())
+                .isNotEmpty().isEqualTo("A-32-3");
     }
 
     @When("^box amount (\\d+)$")
@@ -85,7 +91,7 @@ public class PaletteCompletionAndStoringSteps {
     }
 
     @When("^label of location (.+) is scanned and palette is stored at that location$")
-    public void labelOfLocationAIsScannedAndPaletteIsStoredAtThatLocation(int location) throws Throwable {
+    public void labelOfLocationAIsScannedAndPaletteIsStoredAtThatLocation(String location) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
@@ -102,4 +108,3 @@ public class PaletteCompletionAndStoringSteps {
         throw new PendingException();
     }
 }
-
