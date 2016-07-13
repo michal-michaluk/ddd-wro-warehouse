@@ -1,6 +1,9 @@
 package warehouse;
 
 import lombok.Value;
+import warehouse.locations.Location;
+
+import java.time.LocalDateTime;
 
 /**
  * Created by michal on 08.06.2016.
@@ -8,5 +11,6 @@ import lombok.Value;
 @Value
 public class NewPaletteReadyToStore {
     private final PaletteLabel label;
-    private final String preferredLocation;
+    private final LocalDateTime readyAt;
+    private final Location preferredLocation;
 }

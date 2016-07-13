@@ -4,9 +4,12 @@ import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.assertj.core.api.Assertions;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import warehouse.locations.Location;
 
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,21 +24,19 @@ public class PaletteCompletionAndStoringSteps {
     private PaletteLabel paletteLabel;
     private List<BoxScan> scannedBoxes = new ArrayList<>();
 
-    @InjectMocks
-    private BlaBlaBla object;
+    private ProductStock object;
     @Mock
     private PreferredLocationPicker locationsPicker;
-    @Mock
-    private BlaBlaBla.Events events;
-    @Captor
-    private ArgumentCaptor<NewPaletteReadyToStore> captor;
+    private EventsAssert events = new EventsAssert();
+    private Clock clock = Clock.systemDefaultZone();
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         Mockito.when(
                 locationsPicker.suggestLocationFor(any(PaletteLabel.class))
-        ).thenReturn("A-32-3");
+        ).thenReturn(new Location("A-32-3"));
+        object = new ProductStock("900300", events, locationsPicker, clock);
     }
 
     @When("^label for new palette is printed$")
@@ -57,16 +58,18 @@ public class PaletteCompletionAndStoringSteps {
 
     @Then("^new palette is ready to store$")
     public void newPaletteIsReadyToStore() throws Throwable {
-        Mockito.verify(events).fire(captor.capture());
-        NewPaletteReadyToStore event = captor.getValue();
-        Assertions.assertThat(event.getLabel()).isEqualTo(paletteLabel);
+        events.assertFirst(NewPaletteReadyToStore.class)
+                .isInstanceOf(NewPaletteReadyToStore.class)
+                .extracting(NewPaletteReadyToStore::getLabel)
+                .containsOnly(paletteLabel);
     }
 
     @Then("^preferred location is proposed$")
     public void preferredLocationIsProposed() throws Throwable {
-        NewPaletteReadyToStore event = captor.getValue();
-        Assertions.assertThat(event.getPreferredLocation())
-                .isNotEmpty().isEqualTo("A-32-3");
+        events.assertFirst(NewPaletteReadyToStore.class)
+                .isInstanceOf(NewPaletteReadyToStore.class)
+                .extracting(NewPaletteReadyToStore::getPreferredLocation)
+                .containsOnly(new Location("A-32-3"));
     }
 
     @When("^box amount (\\d+)$")
@@ -91,20 +94,32 @@ public class PaletteCompletionAndStoringSteps {
     }
 
     @When("^label of location (.+) is scanned and palette is stored at that location$")
-    public void labelOfLocationAIsScannedAndPaletteIsStoredAtThatLocation(String location) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void labelOfLocationAIsScannedAndPaletteIsStoredAtThatLocation(Location location) throws Throwable {
+        object.store(new Store(paletteLabel, location));
     }
 
-    @Then("^new location of palette is known$")
-    public void newLocationOfPaletteIsKnown() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @When("^palette is picked by user (.+)$")
+    public void paletteIsPickedByUser(String user) throws Throwable {
+        object.pick(new Pick(paletteLabel, user));
     }
 
     @When("^location is chosen palette dropped at that location$")
     public void locationIsChosenPaletteDroppedAtThatLocation() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
+    }
+
+    @Then("^palette is on location (.+)$")
+    public void paletteIsOnLocationA(Location location) throws Throwable {
+        events.assertLast(Stored.class)
+                .extracting(Stored::getPaletteLabel, Stored::getLocation)
+                .containsExactly(paletteLabel, location);
+    }
+
+    @Then("^palette is on the move$")
+    public void paletteIsOnTheMove() throws Throwable {
+        events.assertLast(Picked.class)
+                .extracting(Picked::getPaletteLabel)
+                .containsExactly(paletteLabel);
     }
 }
