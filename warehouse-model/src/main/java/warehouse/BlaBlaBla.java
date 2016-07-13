@@ -21,7 +21,7 @@ public class BlaBlaBla {
 
         NewPaletteReadyToStore event = new NewPaletteReadyToStore(
                 completeNewPalette.getLabel(),
-                locationsPicker.sagestLocationFor(completeNewPalette.getLabel())
+                locationsPicker.suggestLocationFor(completeNewPalette.getLabel())
         );
         events.fire(event);
     }

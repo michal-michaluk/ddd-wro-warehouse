@@ -34,7 +34,7 @@ public class PaletteCompletionAndStoringSteps {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         Mockito.when(
-                locationsPicker.sagestLocationFor(any(PaletteLabel.class))
+                locationsPicker.suggestLocationFor(any(PaletteLabel.class))
         ).thenReturn("A-32-3");
     }
 

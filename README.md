@@ -1,4 +1,8 @@
 # ddd-wro-warehouse
+[![Licence MIT](http://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/michal-michaluk/ddd-wro-warehouse.svg?branch=master)](https://travis-ci.org/michal-michaluk/ddd-wro-warehouse)
+[![Code Coverage](https://codecov.io/gh/michal-michaluk/ddd-wro-warehouse/branch/master/graph/badge.svg)](https://codecov.io/gh/michal-michaluk/ddd-wro-warehouse)
+
 Warehouse model developed during http://www.meetup.com/DDD-WRO/ meetings.
 
 A producer of plastic parts for automotive industry and household devices, controls their storage "manually" (with paper documents) and without managing the place where the things are stored. 
