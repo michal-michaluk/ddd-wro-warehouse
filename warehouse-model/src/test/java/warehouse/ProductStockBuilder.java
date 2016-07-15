@@ -8,6 +8,7 @@ import warehouse.locations.BasicLocationPicker;
 import warehouse.locations.Location;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,23 +44,46 @@ public class ProductStockBuilder {
     }
 
     public History history() {
-        return History.forInstance(build());
+        return new History(build());
     }
 
     private ProductStockBuilder(String refNo) {
         this.refNo = refNo;
     }
 
-    public static class History {
+    public class History {
 
         private final ProductStock object;
 
-        public static History forInstance(ProductStock object) {
-            return new History(object);
-        }
-
         public ProductStock get() {
             return object;
+        }
+
+        public History newPalette(PaletteLabel paletteLabel) {
+            return newPalette(paletteLabel, LocalDateTime.now(clock),
+                    locationsPicker.suggestLocationFor(paletteLabel));
+        }
+
+        public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt) {
+            return newPalette(paletteLabel, producedAt, locationsPicker.suggestLocationFor(paletteLabel));
+        }
+
+        public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt, Location preferredLocation) {
+            NewPaletteReadyToStore event = new NewPaletteReadyToStore(
+                    paletteLabel, producedAt, preferredLocation
+            );
+            object.handle(event);
+            return this;
+        }
+
+        public History stored(PaletteLabel paletteLabel, Location location) {
+            object.handle(new Stored(paletteLabel, location));
+            return this;
+        }
+
+        public History picked(PaletteLabel paletteLabel, Location location, String user) {
+            object.handle(new Picked(paletteLabel, user, location));
+            return this;
         }
 
         private History(ProductStock object) {

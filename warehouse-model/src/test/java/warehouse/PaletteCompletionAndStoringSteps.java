@@ -81,12 +81,6 @@ public class PaletteCompletionAndStoringSteps {
         throw new PendingException();
     }
 
-    @When("^label of preferred location is scanned and palette is stored at that location$")
-    public void labelOfPreferredLocationIsScannedAndPaletteIsStoredAtThatLocation() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
     @When("^label of location (.+) is scanned and palette is stored at that location$")
     public void labelOfLocationAIsScannedAndPaletteIsStoredAtThatLocation(Location location) throws Throwable {
         object.store(new Store(paletteLabel, location));
@@ -95,12 +89,6 @@ public class PaletteCompletionAndStoringSteps {
     @When("^palette is picked by user (.+)$")
     public void paletteIsPickedByUser(String user) throws Throwable {
         object.pick(new Pick(paletteLabel, user));
-    }
-
-    @When("^location is chosen palette dropped at that location$")
-    public void locationIsChosenPaletteDroppedAtThatLocation() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
     }
 
     @Then("^palette is on location (.+)$")
