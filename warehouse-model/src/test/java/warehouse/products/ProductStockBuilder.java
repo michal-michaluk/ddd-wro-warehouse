@@ -1,11 +1,13 @@
-package warehouse;
+package warehouse.products;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import warehouse.PaletteLabel;
 import warehouse.locations.BasicLocationPicker;
 import warehouse.locations.Location;
+import warehouse.locations.PreferredLocationPicker;
 
 import java.time.Clock;
 import java.time.LocalDateTime;

@@ -1,10 +1,11 @@
-package warehouse;
+package warehouse.products;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import warehouse.locations.BasicLocationPicker;
+import warehouse.BoxLabel;
+import warehouse.PaletteLabel;
 import warehouse.locations.Location;
 
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
-import static warehouse.ProductStockBuilder.l;
 
 /**
  * Created by michal on 08.06.2016.
@@ -20,7 +20,7 @@ import static warehouse.ProductStockBuilder.l;
 public class PaletteCompletionAndStoringSteps {
 
     private PaletteLabel paletteLabel;
-    private List<BoxScan> scannedBoxes = new ArrayList<>();
+    private List<BoxLabel> scannedBoxes = new ArrayList<>();
 
     private ProductStock object;
     private EventsAssert events = new EventsAssert();
@@ -28,7 +28,7 @@ public class PaletteCompletionAndStoringSteps {
     @Before
     public void setUp() throws Exception {
         object = ProductStockBuilder.forRefNo("900300")
-                .locationsPicker(l("900300", new Location("A-32-3")))
+                .locationsPicker(ProductStockBuilder.l("900300", new Location("A-32-3")))
                 .events(events)
                 .build();
     }
@@ -40,7 +40,7 @@ public class PaletteCompletionAndStoringSteps {
 
     @When("^box is scanned$")
     public void boxIsScanned() throws Throwable {
-        scannedBoxes.add(new BoxScan("900300", 25, "1"));
+        scannedBoxes.add(new BoxLabel("900300", 25, "1"));
     }
 
     @When("^palette label is scanned$")
@@ -71,7 +71,7 @@ public class PaletteCompletionAndStoringSteps {
         if (scannedBoxes.isEmpty()) {
             throw new IllegalStateException("No box scanned till now, can't set amount " + amount);
         }
-        BoxScan last = scannedBoxes.get(scannedBoxes.size() - 1);
+        BoxLabel last = scannedBoxes.get(scannedBoxes.size() - 1);
         scannedBoxes.addAll(Collections.nCopies(amount, last));
     }
 

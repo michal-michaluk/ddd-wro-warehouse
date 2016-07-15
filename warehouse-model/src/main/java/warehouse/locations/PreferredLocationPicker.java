@@ -1,6 +1,6 @@
-package warehouse;
+package warehouse.locations;
 
-import warehouse.locations.Location;
+import warehouse.PaletteLabel;
 
 /**
  * Created by michal on 08.06.2016.

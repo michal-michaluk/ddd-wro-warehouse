@@ -1,6 +1,7 @@
-package warehouse;
+package warehouse.products;
 
 import lombok.Value;
+import warehouse.PaletteLabel;
 
 /**
  * Created by michal on 13.07.2016.

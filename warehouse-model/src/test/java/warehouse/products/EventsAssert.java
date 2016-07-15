@@ -1,4 +1,4 @@
-package warehouse;
+package warehouse.products;
 
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assertions;

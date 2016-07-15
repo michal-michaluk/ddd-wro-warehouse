@@ -1,5 +1,7 @@
 package warehouse;
 
+import warehouse.products.ProductStock;
+
 import java.time.Clock;
 import java.util.Optional;
 

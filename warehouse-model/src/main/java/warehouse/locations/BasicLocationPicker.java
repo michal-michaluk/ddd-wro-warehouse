@@ -2,7 +2,6 @@ package warehouse.locations;
 
 import lombok.AllArgsConstructor;
 import warehouse.PaletteLabel;
-import warehouse.PreferredLocationPicker;
 
 import java.util.Map;
 

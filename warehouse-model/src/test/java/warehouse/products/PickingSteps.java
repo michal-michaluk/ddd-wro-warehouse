@@ -1,4 +1,4 @@
-package warehouse;
+package warehouse.products;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;

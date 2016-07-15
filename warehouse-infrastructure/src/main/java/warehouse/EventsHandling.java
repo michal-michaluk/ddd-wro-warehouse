@@ -1,5 +1,10 @@
 package warehouse;
 
+import warehouse.products.NewPaletteReadyToStore;
+import warehouse.products.Picked;
+import warehouse.products.ProductStock;
+import warehouse.products.Stored;
+
 /**
  * Created by michal on 08.06.2016.
  */

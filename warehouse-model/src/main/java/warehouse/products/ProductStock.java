@@ -1,7 +1,9 @@
-package warehouse;
+package warehouse.products;
 
 import lombok.Data;
+import warehouse.PaletteLabel;
 import warehouse.locations.Location;
+import warehouse.locations.PreferredLocationPicker;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -29,27 +31,30 @@ public class ProductStock {
     }
 
     public void completeNewPalette(CompleteNewPalette completeNewPalette) {
+        assert refNo.equals(completeNewPalette.getPaletteLabel().getRefNo());
         // sprawdzamy czy zeskanowane boxy sa z zgodne z produktem na etykiecie palety
         // sprawdzamy czy wszystkie zeskanowane boxy sa tego samego typu
 
         NewPaletteReadyToStore event = new NewPaletteReadyToStore(
-                completeNewPalette.getLabel(),
+                completeNewPalette.getPaletteLabel(),
                 LocalDateTime.now(clock),
-                locationsPicker.suggestLocationFor(completeNewPalette.getLabel())
+                locationsPicker.suggestLocationFor(completeNewPalette.getPaletteLabel())
         );
         handle(event);
         events.fire(event);
     }
 
     public void pick(Pick pick) {
+        assert refNo.equals(pick.getPaletteLabel().getRefNo());
         Location fromLocation = stock.get(pick.getPaletteLabel())
-                .store.map(Stored::getLocation).orElse(Location.production());
+                .stored.map(Stored::getLocation).orElse(Location.production());
         Picked event = new Picked(pick.getPaletteLabel(), pick.getUser(), fromLocation);
         handle(event);
         events.fire(event);
     }
 
     public void store(Store store) {
+        assert refNo.equals(store.getPaletteLabel().getRefNo());
         Stored event = new Stored(
                 store.getPaletteLabel(),
                 store.getLocation());
@@ -80,7 +85,7 @@ public class ProductStock {
     @Data
     private class PaletteInformation {
         private final NewPaletteReadyToStore init;
-        private Optional<Stored> store;
+        private Optional<Stored> stored;
         private Optional<Picked> picked;
 
         public void picked(Picked event) {
@@ -88,7 +93,7 @@ public class ProductStock {
         }
 
         public void stored(Stored event) {
-            store = Optional.of(event);
+            stored = Optional.of(event);
         }
     }
 }

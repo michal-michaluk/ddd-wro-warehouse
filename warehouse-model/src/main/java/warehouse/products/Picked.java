@@ -1,6 +1,7 @@
-package warehouse;
+package warehouse.products;
 
 import lombok.Value;
+import warehouse.PaletteLabel;
 import warehouse.locations.Location;
 
 /**
