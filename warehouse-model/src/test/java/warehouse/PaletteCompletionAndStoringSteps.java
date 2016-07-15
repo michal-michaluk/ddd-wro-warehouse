@@ -4,17 +4,15 @@ import cucumber.api.PendingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import warehouse.locations.BasicLocationPicker;
 import warehouse.locations.Location;
 
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
+import static warehouse.ProductStockBuilder.l;
 
 /**
  * Created by michal on 08.06.2016.
@@ -25,18 +23,14 @@ public class PaletteCompletionAndStoringSteps {
     private List<BoxScan> scannedBoxes = new ArrayList<>();
 
     private ProductStock object;
-    @Mock
-    private PreferredLocationPicker locationsPicker;
     private EventsAssert events = new EventsAssert();
-    private Clock clock = Clock.systemDefaultZone();
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(
-                locationsPicker.suggestLocationFor(any(PaletteLabel.class))
-        ).thenReturn(new Location("A-32-3"));
-        object = new ProductStock("900300", events, locationsPicker, clock);
+        object = ProductStockBuilder.forRefNo("900300")
+                .locationsPicker(l("900300", new Location("A-32-3")))
+                .events(events)
+                .build();
     }
 
     @When("^label for new palette is printed$")
