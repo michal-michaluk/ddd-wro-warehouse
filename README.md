@@ -3,12 +3,21 @@
 [![Build Status](https://travis-ci.org/michal-michaluk/ddd-wro-warehouse.svg?branch=master)](https://travis-ci.org/michal-michaluk/ddd-wro-warehouse)
 [![Code Coverage](https://codecov.io/gh/michal-michaluk/ddd-wro-warehouse/branch/master/graph/badge.svg)](https://codecov.io/gh/michal-michaluk/ddd-wro-warehouse)
 
-Warehouse model developed during http://www.meetup.com/DDD-WRO/ meetings.
+Domain model is developed during [DDD-WRO](http://www.meetup.com/DDD-WRO/) meetings with domain expert from local injection moulding manufacturer of polymer parts for automotive industry and household devices.
 
-A producer of plastic parts for automotive industry and household devices, controls their storage "manually" (with paper documents) and without managing the place where the things are stored. 
+# Business background
 
-The storage supplies a production process with components and keeps the made products before sending them to customer.
+Currently client company controls their storage "manually" (with paper documents) and without managing the exact location of all stored components and products in any kind of software. 
+Introduction of software should allow:
+- keeping FIFO rule for delivering products and consuming components and materials,
+- apply quality lock on parts produced in given batch or made of material from given batch. 
 
-A driver brings production components from supplier to the storage and takes products to the customer. The driver comes with the list of products to take. The customer prefers to get those products first which were ordered first (FIFO: first in - first out).
+# Tech aspect
 
-When a quality department discovers bad product, wants to remove the whole party of products made from the same production component (e.g. plastic granulate). 
+Code business first approach - starting from understanding of business and coding sufficient domain model is the primary thing.
+Domain-Driven Design rules, Event Sourcing with CQRS and minimalism in all aspects goes next.
+Latest and greatest open source frameworks and tools.
+
+# Open source business code
+
+Yep, it is open.
