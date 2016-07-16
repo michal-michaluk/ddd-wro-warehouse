@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static warehouse.products.ProductStockBuilder.l;
+
 /**
  * Created by michal on 08.06.2016.
  */
-public class PaletteCompletionAndStoringSteps {
+public class RegistrationAndStoringSteps {
 
     private PaletteLabel paletteLabel;
     private List<BoxLabel> scannedBoxes = new ArrayList<>();
@@ -26,7 +28,7 @@ public class PaletteCompletionAndStoringSteps {
     @Before
     public void setUp() throws Exception {
         object = ProductStockBuilder.forRefNo("900300")
-                .locationsPicker(ProductStockBuilder.l("900300", new Location("A-32-3")))
+                .locationsPicker(l("900300", new Location("A-32-3")))
                 .events(events)
                 .build();
     }
@@ -43,24 +45,24 @@ public class PaletteCompletionAndStoringSteps {
 
     @When("^palette label is scanned$")
     public void paletteLabelIsScanned() throws Throwable {
-        object.completeNewPalette(
-                new CompleteNewPalette(paletteLabel, scannedBoxes)
+        object.registerNew(
+                new RegisterNew(paletteLabel, scannedBoxes)
         );
     }
 
     @Then("^new palette is ready to store$")
     public void newPaletteIsReadyToStore() throws Throwable {
-        events.assertFirst(NewPaletteReadyToStore.class)
-                .isInstanceOf(NewPaletteReadyToStore.class)
-                .extracting(NewPaletteReadyToStore::getPaletteLabel)
+        events.assertFirst(ReadyToStore.class)
+                .isInstanceOf(ReadyToStore.class)
+                .extracting(ReadyToStore::getPaletteLabel)
                 .containsOnly(paletteLabel);
     }
 
     @Then("^preferred location is proposed$")
     public void preferredLocationIsProposed() throws Throwable {
-        events.assertFirst(NewPaletteReadyToStore.class)
-                .isInstanceOf(NewPaletteReadyToStore.class)
-                .extracting(NewPaletteReadyToStore::getPreferredLocation)
+        events.assertFirst(ReadyToStore.class)
+                .isInstanceOf(ReadyToStore.class)
+                .extracting(ReadyToStore::getPreferredLocation)
                 .containsOnly(new Location("A-32-3"));
     }
 

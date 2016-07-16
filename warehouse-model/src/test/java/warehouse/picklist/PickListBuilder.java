@@ -4,7 +4,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import warehouse.PaletteLabel;
 import warehouse.locations.Location;
-import warehouse.products.NewPaletteReadyToStore;
+import warehouse.products.ReadyToStore;
 import warehouse.products.Stored;
 
 import java.time.LocalDateTime;
@@ -23,7 +23,7 @@ public class PickListBuilder {
     }
 
     public PickListBuilder newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt, Location storedAt) {
-        object.handle(new NewPaletteReadyToStore(paletteLabel, producedAt, storedAt));
+        object.handle(new ReadyToStore(paletteLabel, producedAt, storedAt));
         object.handle(new Stored(paletteLabel, storedAt));
         return this;
     }

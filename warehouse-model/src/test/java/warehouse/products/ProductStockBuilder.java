@@ -72,7 +72,7 @@ public class ProductStockBuilder {
         }
 
         public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt, Location preferredLocation) {
-            NewPaletteReadyToStore event = new NewPaletteReadyToStore(
+            ReadyToStore event = new ReadyToStore(
                     paletteLabel, producedAt, preferredLocation
             );
             object.handle(event);

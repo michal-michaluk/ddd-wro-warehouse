@@ -13,7 +13,7 @@ public class Location {
         return new Location("production");
     }
 
-    public static Location onTheMove() {
-        return new Location("");
+    public static Location onTheMove(String user) {
+        return new Location("picked by " + user);
     }
 }

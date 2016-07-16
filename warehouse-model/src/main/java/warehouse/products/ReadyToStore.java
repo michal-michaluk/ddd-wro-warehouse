@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * Created by michal on 08.06.2016.
  */
 @Value
-public class NewPaletteReadyToStore {
+public class ReadyToStore {
     private final PaletteLabel paletteLabel;
     private final LocalDateTime readyAt;
     private final Location preferredLocation;

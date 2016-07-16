@@ -14,6 +14,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public class PaletteLabelValidTest {
 
+    private Labels labels = new TLabelsFormats();
+
     @Parameterized.Parameters(name = "label {0} parsed")
     public static Collection<Object> data() {
         return Arrays.asList(
@@ -29,7 +31,7 @@ public class PaletteLabelValidTest {
 
     @Test
     public void shouldByValid() throws Exception {
-        PaletteLabel paletteLabel = PaletteLabel.scan(toScan);
+        PaletteLabel paletteLabel = labels.scanPalette(toScan);
         Assertions.assertThat(paletteLabel.getRefNo()).isNotEmpty();
         Assertions.assertThat(paletteLabel.getId())
                 .isEqualTo(toScan)

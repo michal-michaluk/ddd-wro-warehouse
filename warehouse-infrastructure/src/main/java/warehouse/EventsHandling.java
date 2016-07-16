@@ -1,6 +1,6 @@
 package warehouse;
 
-import warehouse.products.NewPaletteReadyToStore;
+import warehouse.products.ReadyToStore;
 import warehouse.products.Picked;
 import warehouse.products.ProductStock;
 import warehouse.products.Stored;
@@ -17,7 +17,7 @@ public class EventsHandling implements ProductStock.Events {
     }
 
     @Override
-    public void fire(NewPaletteReadyToStore event) {
+    public void fire(ReadyToStore event) {
         // persist event
         delegate.fire(event);
         // emit outside app

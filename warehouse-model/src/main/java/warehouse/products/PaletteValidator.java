@@ -10,14 +10,14 @@ import java.util.Set;
  * Created by michal on 16.07.2016.
  */
 public class PaletteValidator {
-    public Set<String> validate(CompleteNewPalette completeNewPalette) {
-        boolean notEmpty = !completeNewPalette.getScannedBoxes().isEmpty();
-        BoxLabel first = completeNewPalette.getScannedBoxes().get(0);
-        boolean sameRefAndBox = completeNewPalette.getScannedBoxes().stream().allMatch(box ->
+    public Set<String> validate(RegisterNew registerNew) {
+        boolean notEmpty = !registerNew.getScannedBoxes().isEmpty();
+        BoxLabel first = registerNew.getScannedBoxes().get(0);
+        boolean sameRefAndBox = registerNew.getScannedBoxes().stream().allMatch(box ->
                 first.getRefNo().equals(box.getRefNo())
                         && first.getBoxType().equals(box.getBoxType())
         );
-        boolean matchingLabel = completeNewPalette.getPaletteLabel().getRefNo().equals(first.getRefNo());
+        boolean matchingLabel = registerNew.getPaletteLabel().getRefNo().equals(first.getRefNo());
         if (notEmpty && sameRefAndBox && matchingLabel) {
             return Collections.emptySet();
         } else {

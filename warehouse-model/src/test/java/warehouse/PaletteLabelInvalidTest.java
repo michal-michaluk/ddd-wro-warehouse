@@ -13,6 +13,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public class PaletteLabelInvalidTest {
 
+    private Labels labels = new TLabelsFormats();
+
     @Parameterized.Parameters(name = "label {0} parsed")
     public static Collection<Object> data() {
         return Arrays.asList(
@@ -28,6 +30,6 @@ public class PaletteLabelInvalidTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldByInvalid() throws Exception {
-        PaletteLabel.scan(toScan);
+        labels.scanPalette(toScan);
     }
 }

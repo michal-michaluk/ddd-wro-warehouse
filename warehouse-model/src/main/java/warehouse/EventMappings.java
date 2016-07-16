@@ -2,7 +2,7 @@ package warehouse;
 
 import lombok.AllArgsConstructor;
 import warehouse.picklist.Fifo;
-import warehouse.products.NewPaletteReadyToStore;
+import warehouse.products.ReadyToStore;
 import warehouse.products.Picked;
 import warehouse.products.ProductStock;
 import warehouse.products.Stored;
@@ -18,7 +18,7 @@ public class EventMappings {
         private final Fifo fifo;
 
         @Override
-        public void fire(NewPaletteReadyToStore event) {
+        public void fire(ReadyToStore event) {
             fifo.handle(event);
         }
 

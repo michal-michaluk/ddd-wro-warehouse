@@ -7,7 +7,8 @@ import cucumber.api.java.en.When;
 import lombok.Data;
 import org.assertj.core.api.Assertions;
 import tools.FunkyDateHolder;
-import warehouse.LabelGenerator;
+import warehouse.Labels;
+import warehouse.TLabelsFormats;
 import warehouse.locations.Location;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class PickingSteps {
         private String produced;
     }
 
-    private final LabelGenerator generator = new LabelGenerator();
+    private final Labels generator = new TLabelsFormats();
     private final FunkyDateHolder prodDate = new FunkyDateHolder();
     private final PickListBuilder builder = PickListBuilder.fifo();
     private final Order.OrderBuilder order = Order.builder();
@@ -45,7 +46,7 @@ public class PickingSteps {
     public void palettesOfStoredAtLocation(int count, String refNo, String day, Location location) throws Throwable {
         prodDate.set(day);
         for (int i = 0; i < count; i++) {
-            builder.newPalette(generator.palette(refNo), prodDate.get(), location);
+            builder.newPalette(generator.newPalette(refNo), prodDate.get(), location);
         }
     }
 

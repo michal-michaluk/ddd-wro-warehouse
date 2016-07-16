@@ -16,7 +16,7 @@ public class EventsAssert implements ProductStock.Events {
     Map<Class<? extends Object>, Object> last = new HashMap<>();
 
     @Override
-    public void fire(NewPaletteReadyToStore event) {
+    public void fire(ReadyToStore event) {
         addEvent(event);
     }
 

@@ -1,5 +1,6 @@
 package warehouse.products;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import warehouse.PaletteLabel;
 import warehouse.locations.Location;
@@ -14,6 +15,7 @@ import java.util.Optional;
 /**
  * Created by michal on 08.06.2016.
  */
+@AllArgsConstructor
 public class ProductStock {
 
     private String refNo;
@@ -22,24 +24,16 @@ public class ProductStock {
     private Events events;
     private Clock clock;
 
-    private Map<PaletteLabel, PaletteInformation> stock = new HashMap<>();
+    private final Map<PaletteLabel, PaletteInformation> stock = new HashMap<>();
 
-    public ProductStock(String refNo, PaletteValidator validator, PreferredLocationPicker locationsPicker, Events events, Clock clock) {
-        this.refNo = refNo;
-        this.events = events;
-        this.validator = validator;
-        this.locationsPicker = locationsPicker;
-        this.clock = clock;
-    }
+    public void registerNew(RegisterNew registerNew) {
+        assert refNo.equals(registerNew.getPaletteLabel().getRefNo());
+        validator.validate(registerNew);
 
-    public void completeNewPalette(CompleteNewPalette completeNewPalette) {
-        assert refNo.equals(completeNewPalette.getPaletteLabel().getRefNo());
-        validator.validate(completeNewPalette);
-
-        NewPaletteReadyToStore event = new NewPaletteReadyToStore(
-                completeNewPalette.getPaletteLabel(),
+        ReadyToStore event = new ReadyToStore(
+                registerNew.getPaletteLabel(),
                 LocalDateTime.now(clock),
-                locationsPicker.suggestLocationFor(completeNewPalette.getPaletteLabel())
+                locationsPicker.suggestLocationFor(registerNew.getPaletteLabel())
         );
         handle(event);
         events.fire(event);
@@ -63,7 +57,7 @@ public class ProductStock {
         events.fire(event);
     }
 
-    protected void handle(NewPaletteReadyToStore event) {
+    protected void handle(ReadyToStore event) {
         stock.put(event.getPaletteLabel(), new PaletteInformation(event));
     }
 
@@ -76,7 +70,7 @@ public class ProductStock {
     }
 
     public interface Events {
-        void fire(NewPaletteReadyToStore event);
+        void fire(ReadyToStore event);
 
         void fire(Stored event);
 
@@ -85,7 +79,7 @@ public class ProductStock {
 
     @Data
     private class PaletteInformation {
-        private final NewPaletteReadyToStore init;
+        private final ReadyToStore init;
         private Optional<Stored> stored;
         private Optional<Picked> picked;
 

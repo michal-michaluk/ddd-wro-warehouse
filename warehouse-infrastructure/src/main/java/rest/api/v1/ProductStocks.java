@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import warehouse.PaletteLabel;
+import warehouse.Labels;
 import warehouse.Repository;
 import warehouse.products.Pick;
 
@@ -26,9 +26,11 @@ public class ProductStocks {
             .registerModule(new JavaTimeModule());
 
     private Repository repository;
+    private Labels labels;
 
-    public ProductStocks(Repository repository) {
+    public ProductStocks(Repository repository, Labels labels) {
         this.repository = repository;
+        this.labels = labels;
     }
 
     public void exposeApi() {
@@ -49,7 +51,7 @@ public class ProductStocks {
                     break;
                 case "pick":
                     Pick pick = new Pick(
-                            PaletteLabel.scan(command.get("label").asText()),
+                            labels.scanPalette(command.get("label").asText()),
                             command.get("user").asText()
                     );
                     repository.get(pick.getPaletteLabel().getRefNo())

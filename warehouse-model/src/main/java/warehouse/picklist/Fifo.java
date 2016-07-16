@@ -3,7 +3,7 @@ package warehouse.picklist;
 import lombok.Data;
 import warehouse.PaletteLabel;
 import warehouse.locations.Location;
-import warehouse.products.NewPaletteReadyToStore;
+import warehouse.products.ReadyToStore;
 import warehouse.products.Stored;
 
 import java.time.LocalDateTime;
@@ -28,7 +28,7 @@ public class Fifo {
         return pickList.build();
     }
 
-    public void handle(NewPaletteReadyToStore event) {
+    public void handle(ReadyToStore event) {
         product(event.getPaletteLabel().getRefNo())
                 .add(event);
     }
@@ -52,7 +52,7 @@ public class Fifo {
             return queue.stream().limit(amount).collect(Collectors.toList());
         }
 
-        private synchronized void add(NewPaletteReadyToStore event) {
+        private synchronized void add(ReadyToStore event) {
             PaletteInfo entry = new PaletteInfo(event.getPaletteLabel(), event.getReadyAt());
             queue.add(entry);
             index.put(event.getPaletteLabel(), entry);
