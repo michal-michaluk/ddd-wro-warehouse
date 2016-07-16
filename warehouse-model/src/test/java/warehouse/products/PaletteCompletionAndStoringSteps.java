@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Matchers.any;
-
 /**
  * Created by michal on 08.06.2016.
  */
@@ -54,7 +52,7 @@ public class PaletteCompletionAndStoringSteps {
     public void newPaletteIsReadyToStore() throws Throwable {
         events.assertFirst(NewPaletteReadyToStore.class)
                 .isInstanceOf(NewPaletteReadyToStore.class)
-                .extracting(NewPaletteReadyToStore::getLabel)
+                .extracting(NewPaletteReadyToStore::getPaletteLabel)
                 .containsOnly(paletteLabel);
     }
 

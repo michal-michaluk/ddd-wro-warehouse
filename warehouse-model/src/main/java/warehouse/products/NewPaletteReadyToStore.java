@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  */
 @Value
 public class NewPaletteReadyToStore {
-    private final PaletteLabel label;
+    private final PaletteLabel paletteLabel;
     private final LocalDateTime readyAt;
     private final Location preferredLocation;
 }

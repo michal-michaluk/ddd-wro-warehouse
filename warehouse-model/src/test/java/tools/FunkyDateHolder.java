@@ -1,19 +1,25 @@
 package tools;
 
-import lombok.Getter;
-
-import java.time.LocalDate;
-import java.time.Month;
+import java.time.*;
 
 /**
  * Created by michal on 02.07.2016.
  */
 public class FunkyDateHolder {
 
-    private LocalDate current;
+    private LocalDate current = forString("some day");
+    private Clock clock;
 
-    public LocalDate get() {
-        return current;
+    public FunkyDateHolder() {
+        this.clock = Clock.systemDefaultZone();
+    }
+
+    public FunkyDateHolder(Clock clock) {
+        this.clock = clock;
+    }
+
+    public LocalDateTime get() {
+        return current.atTime(LocalTime.now(clock));
     }
 
     public void set(String day) {

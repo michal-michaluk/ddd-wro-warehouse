@@ -10,18 +10,30 @@ import warehouse.products.Stored;
  */
 public class EventsHandling implements ProductStock.Events {
 
-    @Override
-    public void fire(NewPaletteReadyToStore newPaletteReadyToStore) {
+    private final ProductStock.Events delegate;
 
+    public EventsHandling(ProductStock.Events delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public void fire(NewPaletteReadyToStore event) {
+        // persist event
+        delegate.fire(event);
+        // emit outside app
     }
 
     @Override
     public void fire(Stored event) {
-
+        // persist event
+        delegate.fire(event);
+        // emit outside app
     }
 
     @Override
     public void fire(Picked event) {
-
+        // persist event
+        delegate.fire(event);
+        // emit outside app
     }
 }

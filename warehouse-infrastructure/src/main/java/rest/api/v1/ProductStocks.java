@@ -6,8 +6,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import warehouse.PaletteLabel;
-import warehouse.products.Pick;
 import warehouse.Repository;
+import warehouse.products.Pick;
 
 import java.util.stream.Collectors;
 

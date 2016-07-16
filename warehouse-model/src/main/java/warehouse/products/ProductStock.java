@@ -17,23 +17,24 @@ import java.util.Optional;
 public class ProductStock {
 
     private String refNo;
-    private Events events;
+    private PaletteValidator validator;
     private PreferredLocationPicker locationsPicker;
+    private Events events;
     private Clock clock;
 
     private Map<PaletteLabel, PaletteInformation> stock = new HashMap<>();
 
-    public ProductStock(String refNo, Events events, PreferredLocationPicker locationsPicker, Clock clock) {
+    public ProductStock(String refNo, PaletteValidator validator, PreferredLocationPicker locationsPicker, Events events, Clock clock) {
         this.refNo = refNo;
         this.events = events;
+        this.validator = validator;
         this.locationsPicker = locationsPicker;
         this.clock = clock;
     }
 
     public void completeNewPalette(CompleteNewPalette completeNewPalette) {
         assert refNo.equals(completeNewPalette.getPaletteLabel().getRefNo());
-        // sprawdzamy czy zeskanowane boxy sa z zgodne z produktem na etykiecie palety
-        // sprawdzamy czy wszystkie zeskanowane boxy sa tego samego typu
+        validator.validate(completeNewPalette);
 
         NewPaletteReadyToStore event = new NewPaletteReadyToStore(
                 completeNewPalette.getPaletteLabel(),
@@ -63,7 +64,7 @@ public class ProductStock {
     }
 
     protected void handle(NewPaletteReadyToStore event) {
-        stock.put(event.getLabel(), new PaletteInformation(event));
+        stock.put(event.getPaletteLabel(), new PaletteInformation(event));
     }
 
     protected void handle(Picked event) {

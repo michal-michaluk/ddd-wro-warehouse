@@ -1,6 +1,7 @@
 package rest.api;
 
 import rest.api.v1.ProductStocks;
+import warehouse.EventMappings;
 import warehouse.Repository;
 
 /**
@@ -9,6 +10,6 @@ import warehouse.Repository;
 public class Main {
 
     public static void main(String[] args) {
-        new ProductStocks(new Repository()).exposeApi();
+        new ProductStocks(new Repository(new EventMappings())).exposeApi();
     }
 }
