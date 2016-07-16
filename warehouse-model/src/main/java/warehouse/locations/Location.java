@@ -16,4 +16,8 @@ public class Location {
     public static Location onTheMove(String user) {
         return new Location("picked by " + user);
     }
+
+    public static Location of(String location) {
+        return new Location(location);
+    }
 }
