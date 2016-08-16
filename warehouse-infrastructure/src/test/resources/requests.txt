@@ -1,0 +1,18 @@
+
+curl 'http://localhost:4567/api/v1/products?900300=5&900400=2'
+
+curl 'http://localhost:4567/api/v1/products?900400=2'
+
+curl -X POST -H "Content-Type: application/json" -d \
+ '{"command":"register", "label":"P-900400-0003", "boxes":["B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A"]}' \
+ http://localhost:4567/api/v1/products
+
+curl -X POST -H "Content-Type: application/json" -d \
+ '{"command":"pick", "label":"P-900400-0003", "user":"michal"}' \
+ http://localhost:4567/api/v1/products
+
+curl -X POST -H "Content-Type: application/json" -d \
+ '{"command":"store", "label":"P-900400-0003", "location":"L-A31-3"}' \
+ http://localhost:4567/api/v1/products
+
+curl 'http://localhost:4567/api/v1/products?900400=2'
