@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import com.sun.xml.internal.ws.util.StreamUtils;
 import lombok.AllArgsConstructor;
-import spark.ResponseTransformer;
 import warehouse.Labels;
 import warehouse.Repository;
 import warehouse.locations.Location;
@@ -57,11 +55,11 @@ public class ProductStocks {
             String body = request.body();
             JsonNode command = mapper.readTree(body);
             switch (command.get("command").asText()) {
-                case "register":{
+                case "register": {
                     RegisterNew register = new RegisterNew(
                             labels.scanPalette(command.get("label").asText()),
                             StreamSupport.stream(command.get("boxes").spliterator(), false)
-                            .map(box -> labels.scanBox(box.asText())).collect(Collectors.toList())
+                                    .map(box -> labels.scanBox(box.asText())).collect(Collectors.toList())
                     );
                     repository.get(register.getPaletteLabel().getRefNo())
                             .ifPresent(o -> o.registerNew(register));
@@ -79,7 +77,7 @@ public class ProductStocks {
                 case "store": {
                     Store store = new Store(
                             labels.scanPalette(command.get("label").asText()),
-                            Location.of(command.get("location").asText())
+                            new Location(command.get("location").asText())
                     );
                     repository.get(store.getPaletteLabel().getRefNo())
                             .ifPresent(o -> o.store(store));

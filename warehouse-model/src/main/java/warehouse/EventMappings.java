@@ -1,35 +1,66 @@
 package warehouse;
 
 import lombok.AllArgsConstructor;
-import warehouse.picklist.Fifo;
-import warehouse.products.ReadyToStore;
-import warehouse.products.Picked;
-import warehouse.products.ProductStock;
-import warehouse.products.Stored;
+import warehouse.picklist.FifoRepository;
+import warehouse.products.*;
+import warehouse.quality.Destroyed;
+import warehouse.quality.Locked;
+import warehouse.quality.Unlocked;
 
 /**
  * Created by michal on 16.07.2016.
  */
 public class EventMappings {
 
+    private ProductStockRepository stocks;
+    private FifoRepository fifo;
+
+    @AllArgsConstructor
+    public class RemoteEvents {
+
+        public void emit(Locked event) {
+            fifo.handle(event.getPaletteLabel().getRefNo(), event);
+        }
+
+        public void emit(Unlocked event) {
+            fifo.handle(event.getPaletteLabel().getRefNo(), event);
+        }
+
+        public void emit(Destroyed event) {
+            fifo.handle(event.getPaletteLabel().getRefNo(), event);
+        }
+
+        public void emit(Delivered event) {
+            stocks.get(event.getPaletteLabel().getRefNo())
+                    .ifPresent(productStock -> productStock.delivered(event));
+            fifo.handle(event.getPaletteLabel().getRefNo(), event);
+        }
+    }
+
     @AllArgsConstructor
     public class ProductStocks implements ProductStock.Events {
 
-        private final Fifo fifo;
-
         @Override
-        public void fire(ReadyToStore event) {
-            fifo.handle(event);
+        public void emit(ReadyToStore event) {
+            fifo.handle(event.getPaletteLabel().getRefNo(), event);
         }
 
         @Override
-        public void fire(Stored event) {
-            fifo.handle(event);
+        public void emit(Stored event) {
         }
 
         @Override
-        public void fire(Picked event) {
-
+        public void emit(Picked event) {
         }
+
+        @Override
+        public void emit(Locked event) {
+            fifo.handle(event.getPaletteLabel().getRefNo(), event);
+        }
+    }
+
+    protected void dependencies(ProductStockRepository stocks, FifoRepository fifo) {
+        this.stocks = stocks;
+        this.fifo = fifo;
     }
 }

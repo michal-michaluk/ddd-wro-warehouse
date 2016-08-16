@@ -11,5 +11,6 @@ import warehouse.locations.Location;
 public class Picked {
     private final PaletteLabel paletteLabel;
     private final String user;
-    private final Location lastKnownLocation;
+    private final Location previousLocation;
+    private final Location onTheMoveLocation;
 }

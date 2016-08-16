@@ -11,6 +11,6 @@ import warehouse.TLabelsFormats;
 public class Main {
 
     public static void main(String[] args) {
-        new ProductStocks(new Repository(new EventMappings()), new TLabelsFormats()).exposeApi();
+        new ProductStocks(new Repository(new EventMappings()), new TLabelsFormats(0)).exposeApi();
     }
 }

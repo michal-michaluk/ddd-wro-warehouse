@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import warehouse.BoxLabel;
 import warehouse.PaletteLabel;
 import warehouse.locations.BasicLocationPicker;
 import warehouse.locations.Location;
@@ -12,6 +13,7 @@ import warehouse.locations.PreferredLocationPicker;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,22 +60,26 @@ public class ProductStockBuilder {
 
         private final ProductStock object;
 
+        private History(ProductStock object) {
+            this.object = object;
+        }
+
         public ProductStock get() {
             return object;
         }
 
         public History newPalette(PaletteLabel paletteLabel) {
             return newPalette(paletteLabel, LocalDateTime.now(clock),
-                    locationsPicker.suggestLocationFor(paletteLabel));
+                    locationsPicker.suggestFor(paletteLabel.getRefNo()));
         }
 
         public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt) {
-            return newPalette(paletteLabel, producedAt, locationsPicker.suggestLocationFor(paletteLabel));
+            return newPalette(paletteLabel, producedAt, locationsPicker.suggestFor(paletteLabel.getRefNo()));
         }
 
         public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt, Location preferredLocation) {
             ReadyToStore event = new ReadyToStore(
-                    paletteLabel, producedAt, preferredLocation
+                    paletteLabel, someBoxesFor(paletteLabel.getRefNo()), producedAt, preferredLocation
             );
             object.handle(event);
             return this;
@@ -85,12 +91,12 @@ public class ProductStockBuilder {
         }
 
         public History picked(PaletteLabel paletteLabel, Location location, String user) {
-            object.handle(new Picked(paletteLabel, user, location));
+            object.handle(new Picked(paletteLabel, user, location, Location.onTheMove(user)));
             return this;
         }
 
-        private History(ProductStock object) {
-            this.object = object;
+        private List<BoxLabel> someBoxesFor(String refNo) {
+            return Collections.nCopies(10, new BoxLabel(refNo, 25, "A"));
         }
     }
 

@@ -2,10 +2,13 @@ package warehouse.products;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.assertj.core.api.Assertions;
 import warehouse.BoxLabel;
 import warehouse.PaletteLabel;
+import warehouse.TLabelsFormats;
 import warehouse.locations.Location;
 
 import java.util.ArrayList;
@@ -24,21 +27,23 @@ public class RegistrationAndStoringSteps {
 
     private ProductStock object;
     private EventsAssert events = new EventsAssert();
+    private TLabelsFormats generator = new TLabelsFormats(0);
 
     @Before
     public void setUp() throws Exception {
         object = ProductStockBuilder.forRefNo("900300")
+                .validator(new PaletteValidator())
                 .locationsPicker(l("900300", new Location("A-32-3")))
                 .events(events)
                 .build();
     }
 
-    @When("^label for new palette is printed$")
+    @Given("^label for new palette is printed$")
     public void commandToPrintPaletteLabel() throws Throwable {
-        paletteLabel = new PaletteLabel("", "900300");
+        paletteLabel = generator.newPalette("900300");
     }
 
-    @When("^box is scanned$")
+    @Given("^box is scanned$")
     public void boxIsScanned() throws Throwable {
         scannedBoxes.add(new BoxLabel("900300", 25, "1"));
     }
@@ -75,7 +80,7 @@ public class RegistrationAndStoringSteps {
         scannedBoxes.addAll(Collections.nCopies(amount, last));
     }
 
-    @When("^partial box is scanned$")
+    @Given("^partial box is scanned$")
     public void partialBoxIsScanned() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
@@ -96,6 +101,8 @@ public class RegistrationAndStoringSteps {
         events.assertLast(Stored.class)
                 .extracting(Stored::getPaletteLabel, Stored::getLocation)
                 .containsExactly(paletteLabel, location);
+        Assertions.assertThat(object.getLocation(paletteLabel))
+                .isEqualTo(location);
     }
 
     @Then("^palette is on the move$")
@@ -103,5 +110,7 @@ public class RegistrationAndStoringSteps {
         events.assertLast(Picked.class)
                 .extracting(Picked::getPaletteLabel)
                 .containsExactly(paletteLabel);
+        Assertions.assertThat(object.getLocation(paletteLabel).getLocation())
+                .startsWith("picked");
     }
 }

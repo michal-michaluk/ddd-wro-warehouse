@@ -1,4 +1,10 @@
 Feature: Storing of newly completed palette
+  to deliver in fifo rule and track suspected products
+  we need to track location of stored palettes in warehouse
+
+  Domain story: picking and storing
+  after pick, during transport palette is assigned to user
+  after store, new location is known
 
   Background:
       # once upon a time

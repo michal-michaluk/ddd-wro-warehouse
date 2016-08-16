@@ -9,4 +9,9 @@ import lombok.Value;
 public class PaletteLabel {
     private final String id;
     private final String refNo;
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

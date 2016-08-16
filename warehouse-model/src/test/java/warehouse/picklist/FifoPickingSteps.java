@@ -8,6 +8,7 @@ import lombok.Data;
 import org.assertj.core.api.Assertions;
 import tools.FunkyDateHolder;
 import warehouse.Labels;
+import warehouse.PaletteLabel;
 import warehouse.TLabelsFormats;
 import warehouse.locations.Location;
 
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Created by michal on 02.07.2016.
  */
-public class PickingSteps {
+public class FifoPickingSteps {
 
     private PickList pickList;
 
@@ -28,15 +29,21 @@ public class PickingSteps {
         private String produced;
     }
 
-    private final Labels generator = new TLabelsFormats();
+    @Data
+    public static class Palette {
+        private String label;
+        private Location location;
+        private String produced;
+    }
+
+    private final Labels generator = new TLabelsFormats(0);
     private final FunkyDateHolder prodDate = new FunkyDateHolder();
-    private final PickListBuilder builder = PickListBuilder.fifo();
+    private final FifoBuilder.History builder = FifoBuilder.builder().history();
     private final Order.OrderBuilder order = Order.builder();
 
     @Given("^stock of:$")
     public void stockOf(List<StockEntry> stock) throws Throwable {
         for (StockEntry entry : stock) {
-            prodDate.set(entry.getProduced());
             palettesOfStoredAtLocation(entry.amount, entry.refNo,
                     entry.produced, entry.location);
         }
@@ -48,6 +55,40 @@ public class PickingSteps {
         for (int i = 0; i < count; i++) {
             builder.newPalette(generator.newPalette(refNo), prodDate.get(), location);
         }
+    }
+
+    @Given("^palettes:$")
+    public void palettes(List<Palette> palettes) throws Throwable {
+        for (Palette entry : palettes) {
+            paletteStoredAtLocation(generator.scanPalette(entry.label),
+                    entry.produced, entry.location);
+        }
+    }
+
+    @Given("^palette (\\d+) produced (.+) stored at (.+) location$")
+    public void paletteStoredAtLocation(PaletteLabel label, String day, Location location) {
+        prodDate.set(day);
+        builder.newPalette(label, prodDate.get(), location);
+    }
+
+    @Given("^palette (.+) is delivered$")
+    public void paletteFromAIsDelivered(String paletteLabel) throws Throwable {
+        builder.delivered(generator.scanPalette(paletteLabel));
+    }
+
+    @Given("^palette (.+) is locked$")
+    public void paletteFromAIsLocked(String paletteLabel) throws Throwable {
+        builder.locked(generator.scanPalette(paletteLabel));
+    }
+
+    @Given("^palette (.+) is unlocked$")
+    public void paletteFromAIsUnlocked(String paletteLabel) throws Throwable {
+        builder.unlocked(generator.scanPalette(paletteLabel));
+    }
+
+    @Given("^palette (.+) is destroyed$")
+    public void paletteFromAIsDestroyed(String paletteLabel) throws Throwable {
+        builder.destroyed(generator.scanPalette(paletteLabel));
     }
 
     @When("^need to deliver (\\d+) palettes of (.+) to customer$")

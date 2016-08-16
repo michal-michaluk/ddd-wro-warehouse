@@ -14,7 +14,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public class PaletteLabelValidTest {
 
-    private Labels labels = new TLabelsFormats();
+    private Labels labels = new TLabelsFormats(0);
 
     @Parameterized.Parameters(name = "label {0} parsed")
     public static Collection<Object> data() {

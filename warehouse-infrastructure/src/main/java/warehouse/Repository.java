@@ -14,11 +14,11 @@ import java.util.Optional;
  */
 public class Repository {
 
-    private final Fifo fifo = new Fifo();
+    private final Fifo fifo = new Fifo(null, null);
     private final ProductStock.Events events;
 
     public Repository(EventMappings mappings) {
-        this.events = mappings.new ProductStocks(fifo);
+        this.events = mappings.new ProductStocks();
     }
 
     public Optional<ProductStock> get(String refNo) {

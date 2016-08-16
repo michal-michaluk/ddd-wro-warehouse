@@ -1,9 +1,10 @@
 package warehouse;
 
-import warehouse.products.ReadyToStore;
 import warehouse.products.Picked;
 import warehouse.products.ProductStock;
+import warehouse.products.ReadyToStore;
 import warehouse.products.Stored;
+import warehouse.quality.Locked;
 
 /**
  * Created by michal on 08.06.2016.
@@ -17,23 +18,30 @@ public class EventsHandling implements ProductStock.Events {
     }
 
     @Override
-    public void fire(ReadyToStore event) {
+    public void emit(ReadyToStore event) {
         // persist event
-        delegate.fire(event);
+        delegate.emit(event);
         // emit outside app
     }
 
     @Override
-    public void fire(Stored event) {
+    public void emit(Stored event) {
         // persist event
-        delegate.fire(event);
+        delegate.emit(event);
         // emit outside app
     }
 
     @Override
-    public void fire(Picked event) {
+    public void emit(Picked event) {
         // persist event
-        delegate.fire(event);
+        delegate.emit(event);
+        // emit outside app
+    }
+
+    @Override
+    public void emit(Locked event) {
+        // persist event
+        delegate.emit(event);
         // emit outside app
     }
 }

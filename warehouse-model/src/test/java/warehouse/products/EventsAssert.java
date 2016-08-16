@@ -2,6 +2,8 @@ package warehouse.products;
 
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assertions;
+import org.mockito.Mockito;
+import warehouse.quality.Locked;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,21 +14,41 @@ import java.util.Map;
  * Created by michal on 13.07.2016.
  */
 public class EventsAssert implements ProductStock.Events {
-    List<Object> events = new LinkedList<>();
-    Map<Class<? extends Object>, Object> last = new HashMap<>();
+
+    private final ProductStock.Events delegate;
+
+    private final List<Object> events = new LinkedList<>();
+    private final Map<Class<? extends Object>, Object> last = new HashMap<>();
+
+    public EventsAssert(ProductStock.Events delegate) {
+        this.delegate = delegate;
+    }
+
+    public EventsAssert() {
+        delegate = Mockito.mock(ProductStock.Events.class);
+    }
 
     @Override
-    public void fire(ReadyToStore event) {
+    public void emit(ReadyToStore event) {
+        delegate.emit(event);
         addEvent(event);
     }
 
     @Override
-    public void fire(Stored event) {
+    public void emit(Stored event) {
+        delegate.emit(event);
         addEvent(event);
     }
 
     @Override
-    public void fire(Picked event) {
+    public void emit(Picked event) {
+        delegate.emit(event);
+        addEvent(event);
+    }
+
+    @Override
+    public void emit(Locked event) {
+        delegate.emit(event);
         addEvent(event);
     }
 
@@ -49,4 +71,9 @@ public class EventsAssert implements ProductStock.Events {
     public <T> AbstractObjectAssert<?, T> assertLast(Class<T> type) {
         return this.<T>assertAt(events.size() - 1, type);
     }
+
+    public void notEmitted(Class<?> eventType) {
+        Assertions.assertThat(last).doesNotContainKey(eventType);
+    }
+
 }

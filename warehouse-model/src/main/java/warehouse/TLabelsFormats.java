@@ -7,7 +7,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TLabelsFormats implements Labels {
 
-    private AtomicInteger index = new AtomicInteger();
+    private final AtomicInteger index;
+
+    public TLabelsFormats(int lastIndex) {
+        this.index = new AtomicInteger(lastIndex);
+    }
 
     @Override
     public PaletteLabel newPalette(String refNo) {
@@ -17,25 +21,31 @@ public class TLabelsFormats implements Labels {
 
     @Override
     public PaletteLabel scanPalette(String label) {
+        String[] pieces = label.split("-");
         if (!label.startsWith("P-")) {
-            throw new IllegalArgumentException("Label need to start with 'P-' characters, ex: P-900300-8A3");
+            throw new IllegalArgumentException("Label need to start with 'P-' characters, format: P-<refNo>-<index>, ex: P-900300-8A3");
         }
-        if (label.indexOf('-', 2) == -1) {
-            throw new IllegalArgumentException("Label need to have two '-' characters, ex: P-900300-8A3");
+        if (pieces.length != 3) {
+            throw new IllegalArgumentException("Label need to have two '-' characters, format: P-<refNo>-<index>, ex: P-900300-8A3");
         }
-        String refNo = label.substring(2, label.indexOf('-', 2));
-        if (refNo.isEmpty()) {
-            throw new IllegalArgumentException("Label has empty refNo, format: P-<refNo>-<index>");
+        if (pieces[1].isEmpty()) {
+            throw new IllegalArgumentException("Label has empty refNo, format: P-<refNo>-<index>, ex: P-900300-8A3");
         }
-        if (label.indexOf('-', 2) == label.length() - 1) {
-            throw new IllegalArgumentException("Label has empty index, format: P-<refNo>-<index>");
+        if (pieces[2].isEmpty()) {
+            throw new IllegalArgumentException("Label has empty index, format: P-<refNo>-<index>, ex: P-900300-8A3");
         }
-        return new PaletteLabel(label, refNo);
+        return new PaletteLabel(label, pieces[1]);
     }
 
     @Override
     public BoxLabel scanBox(String label) {
-        // TODO parse: B-<refNo>-<quantity>-<boxType>
-        return new BoxLabel("", 0, "");
+        String[] pieces = label.split("-");
+        if (!label.startsWith("B-")) {
+            throw new IllegalArgumentException("Label need to start with 'B-' characters, format: B-<refNo>-<quantity>-<boxType>, ex: B-900300-24-B");
+        }
+        if (pieces.length != 4) {
+            throw new IllegalArgumentException("Label need to have three '-' characters, format: B-<refNo>-<quantity>-<boxType>, ex: B-900300-24-B");
+        }
+        return new BoxLabel(pieces[1], Integer.valueOf(pieces[2]), pieces[3]);
     }
 }

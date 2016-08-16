@@ -13,11 +13,15 @@ public class Location {
         return new Location("production");
     }
 
+    public static Location quarantine() {
+        return new Location("quarantine");
+    }
+
     public static Location onTheMove(String user) {
         return new Location("picked by " + user);
     }
 
-    public static Location of(String location) {
-        return new Location(location);
+    public static Location unknown() {
+        return new Location("<unknown>");
     }
 }
