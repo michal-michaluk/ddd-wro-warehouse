@@ -16,7 +16,7 @@ public class ProductStockEventsHandler implements ProductStock.Events {
     }
 
     @Override
-    public void emit(ReadyToStore event) {
+    public void emit(Registered event) {
         repository.persist(event.getPaletteLabel().getRefNo(), event);
         delegate.emit(event);
         // emit outside app

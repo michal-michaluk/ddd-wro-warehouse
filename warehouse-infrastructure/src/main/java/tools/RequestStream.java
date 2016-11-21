@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Created by michal on 09.07.2016.
@@ -91,6 +92,14 @@ public class RequestStream {
             return new Lookup<>(this, map);
         }
 
+        default Mapper<INPUT, Void> command(Consumer<OUTPUT> consumer) {
+            return  (request, response, in) -> {
+                OUTPUT output = apply(request, response, in);
+                consumer.accept(output);
+                return null;
+            };
+        }
+
         default <SWITCH> Switch<INPUT, OUTPUT, SWITCH> switchOn(Mapper<OUTPUT, SWITCH> switchOn) {
             return new Switch<>(this, switchOn);
         }
@@ -132,7 +141,7 @@ public class RequestStream {
 
         public <OUTPUT> Mapper<INPUT, OUTPUT> otherwise(Mapper<INPUT, OUTPUT> mapper) {
             def = mapper;
-            return mapper;
+            return mapper; // TODO some issue here
         }
 
         @Override

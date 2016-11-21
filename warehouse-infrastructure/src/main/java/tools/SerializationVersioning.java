@@ -59,12 +59,12 @@ public class SerializationVersioning {
 
     public SerializationVersioning(Description<?>... descriptions) {
         this.byAliases = Stream.of(descriptions).collect(Collectors.toMap(Description::getAlias, Function.identity(), (desc1, desc2) -> {
-            throw new IllegalArgumentException("doubled alias in event serialisation descriptions " + desc1 + " " + desc2);
+            throw new IllegalArgumentException("doubled alias in event serialization descriptions " + desc1 + " " + desc2);
         }));
         this.byEvents = Stream.of(descriptions)
                 .filter(Description::isCurrent)
                 .collect(Collectors.toMap(Description::getType, Function.identity(), (desc1, desc2) -> {
-                    throw new IllegalArgumentException("two current event serialisation descriptions " + desc1 + " " + desc2);
+                    throw new IllegalArgumentException("two current event serialization descriptions " + desc1 + " " + desc2);
                 }));
     }
 

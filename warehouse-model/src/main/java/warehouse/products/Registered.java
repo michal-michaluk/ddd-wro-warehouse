@@ -17,15 +17,15 @@ import static warehouse.products.PaletteValidator.ValidationResult.valid;
  */
 @Value
 @AllArgsConstructor
-public class ReadyToStore {
+public class Registered {
     private final PaletteLabel paletteLabel;
     private final List<BoxLabel> scannedBoxes;
     private final LocalDateTime readyAt;
     private final Location preferredLocation;
     private final PaletteValidator.ValidationResult validationResult;
 
-    public ReadyToStore(PaletteLabel paletteLabel, List<BoxLabel> scannedBoxes,
-                        LocalDateTime readyAt, Location preferredLocation) {
+    public Registered(PaletteLabel paletteLabel, List<BoxLabel> scannedBoxes,
+                      LocalDateTime readyAt, Location preferredLocation) {
         this.paletteLabel = paletteLabel;
         this.scannedBoxes = Collections.unmodifiableList(scannedBoxes);
         this.readyAt = readyAt;

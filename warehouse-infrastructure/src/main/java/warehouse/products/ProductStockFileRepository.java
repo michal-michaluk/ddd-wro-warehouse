@@ -29,7 +29,7 @@ public class ProductStockFileRepository implements ProductStockRepository {
     }
 
     private static final MultiMethod<ProductStock, Void> productStock$handle =
-            MultiMethod.in(ProductStock.class).method(void.class, "handle")
+            MultiMethod.in(ProductStock.class).method("handle")
                     .lookup(MethodHandles.lookup())
                     .onMissingHandler(Exception::printStackTrace);
 
@@ -64,7 +64,7 @@ public class ProductStockFileRepository implements ProductStockRepository {
                 try {
                     productStock$handle.call(stock, event);
                 } catch (Throwable throwable) {
-                    // for stock <refNo> cannot reply event <event> cause <throwable>
+                    // stock <refNo> cannot replay event <event> cause <throwable>
                     throwable.printStackTrace();
                 }
             }
@@ -76,10 +76,10 @@ public class ProductStockFileRepository implements ProductStockRepository {
         return retrieve(refNo);
     }
 
-    protected void persist(String refNo, Object event) {
-        String json = Persistence.serialisation.serialize(event);
-        String alias = Persistence.serialisation.of(event.getClass()).getAlias();
-        EventEntry entry = new ProductStockFileRepository.EventEntry(
+    public void persist(String refNo, Object event) {
+        String json = Persistence.serialization.serialize(event);
+        String alias = Persistence.serialization.of(event.getClass()).getAlias();
+        EventEntry entry = new EventEntry(
                 UUID.randomUUID(), LocalDateTime.now(), refNo, alias, json);
         store.append(refNo, entry);
     }
@@ -87,7 +87,7 @@ public class ProductStockFileRepository implements ProductStockRepository {
     protected List<Object> retrieve(String refNo) {
         List<ProductStockFileRepository.EventEntry> history = store.readAll(refNo, EventEntry.class);
         return history.stream()
-                .map(entry -> Persistence.serialisation.deserialize(entry.getJson(), entry.getType()))
+                .map(entry -> Persistence.serialization.deserialize(entry.getJson(), entry.getType()))
                 .collect(Collectors.toList());
     }
 }

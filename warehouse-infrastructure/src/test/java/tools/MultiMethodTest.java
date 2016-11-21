@@ -67,7 +67,7 @@ public class MultiMethodTest {
     @Test
     public void silentOnPrivateCall() throws Throwable {
         HandlerOfManyEvents object = new HandlerOfManyEvents();
-        handler.call(object, new Unlocked(null));
+        handler.call(object, new Unlocked(null, 0, 0));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class MultiMethodTest {
                 });
 
         HandlerOfManyEvents object = new HandlerOfManyEvents();
-        handler.call(object, new Unlocked(null));
+        handler.call(object, new Unlocked(null, 0, 0));
     }
 
     @Test

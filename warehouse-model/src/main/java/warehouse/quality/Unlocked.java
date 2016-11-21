@@ -9,4 +9,6 @@ import warehouse.PaletteLabel;
 @Value
 public class Unlocked {
     private final PaletteLabel paletteLabel;
+    private final int recovered;
+    private final int scraped;
 }

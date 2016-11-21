@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 import warehouse.PaletteLabel;
 import warehouse.locations.Location;
 import warehouse.products.Delivered;
-import warehouse.products.ReadyToStore;
+import warehouse.products.Registered;
 import warehouse.quality.Destroyed;
 import warehouse.quality.Locked;
 import warehouse.quality.Unlocked;
@@ -56,7 +56,7 @@ public class FifoBuilder {
 
         public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt, Location storedAt) {
             Fifo.PerProduct product = product(paletteLabel.getRefNo());
-            product.handle(new ReadyToStore(paletteLabel, Collections.emptyList(), producedAt, storedAt));
+            product.handle(new Registered(paletteLabel, Collections.emptyList(), producedAt, storedAt));
             locations.put(paletteLabel, storedAt);
             return this;
         }
@@ -73,9 +73,9 @@ public class FifoBuilder {
             return this;
         }
 
-        public History unlocked(PaletteLabel paletteLabel) {
+        public History unlocked(PaletteLabel paletteLabel, int recovered, int scraped) {
             Fifo.PerProduct product = product(paletteLabel.getRefNo());
-            product.handle(new Unlocked(paletteLabel));
+            product.handle(new Unlocked(paletteLabel, recovered, scraped));
             return this;
         }
 

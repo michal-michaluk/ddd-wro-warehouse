@@ -13,13 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Querying and influencing events behaviour:
  * lot of stored products without any activity
  * queried once a day for multiple products
- * lot of ReadyToStore and Delivered during day for selected products
+ * lot of Registered and Delivered during day for selected products
  * queried multiple times over the day
  * <p>
  * technical chooses:
  * view exists temporally lookup memory for subset of products
  * products loaded on demand reading all stock history (no view snapshot for now)
- * when products is lookup memory, view listens on events
+ * when products is memory, view listens on events
  * when products not lookup memory, repo filters out events
  * memory content cleared once a day
  * <p>
@@ -48,9 +48,9 @@ public class FifoViewRepository implements FifoRepository {
                 stocks.get(paletteLabel.getRefNo())
                         .map(productStock -> productStock.getLocation(paletteLabel))
                         .orElse(Location.unknown());
-        this.fifo = new Fifo(paletteLocations, refNo ->
-                products.computeIfAbsent(refNo, this::load)
-        );
+        Fifo.Products products = refNo ->
+                this.products.computeIfAbsent(refNo, this::load);
+        this.fifo = new Fifo(paletteLocations, products);
     }
 
     @Override

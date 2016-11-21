@@ -78,7 +78,7 @@ public class ProductStockBuilder {
         }
 
         public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt, Location preferredLocation) {
-            ReadyToStore event = new ReadyToStore(
+            Registered event = new Registered(
                     paletteLabel, someBoxesFor(paletteLabel.getRefNo()), producedAt, preferredLocation
             );
             object.handle(event);

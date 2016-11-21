@@ -83,7 +83,7 @@ public class FifoPickingSteps {
 
     @Given("^palette (.+) is unlocked$")
     public void paletteFromAIsUnlocked(String paletteLabel) throws Throwable {
-        builder.unlocked(generator.scanPalette(paletteLabel));
+        builder.unlocked(generator.scanPalette(paletteLabel), 100, 0);
     }
 
     @Given("^palette (.+) is destroyed$")

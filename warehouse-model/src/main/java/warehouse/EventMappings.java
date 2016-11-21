@@ -16,7 +16,7 @@ public class EventMappings {
     private FifoRepository fifo;
 
     @AllArgsConstructor
-    public class RemoteEvents {
+    public class ExternalEvents {
 
         public void emit(Locked event) {
             fifo.handle(event.getPaletteLabel().getRefNo(), event);
@@ -41,7 +41,7 @@ public class EventMappings {
     public class ProductStocks implements ProductStock.Events {
 
         @Override
-        public void emit(ReadyToStore event) {
+        public void emit(Registered event) {
             fifo.handle(event.getPaletteLabel().getRefNo(), event);
         }
 

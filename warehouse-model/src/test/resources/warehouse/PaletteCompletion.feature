@@ -39,16 +39,16 @@ Feature: Completing of new palette
     Then preferred location is proposed
 
 
-  Scenario: new palette with partial box is completed in production
-    # once upon a time
-    When label for new palette is printed
-    # some time later
-    # palette is stretched
-    When box is scanned
-    When box amount 20
-    When partial box is scanned
-    # palette label is glued to palette
-    When palette label is scanned
-    Then new palette is ready to store
-    Then preferred location is proposed
+#  Scenario: new palette with partial box is completed in production
+#    # once upon a time
+#    When label for new palette is printed
+#    # some time later
+#    # palette is stretched
+#    When box is scanned
+#    When box amount 20
+#    When partial box is scanned
+#    # palette label is glued to palette
+#    When palette label is scanned
+#    Then new palette is ready to store
+#    Then preferred location is proposed
 

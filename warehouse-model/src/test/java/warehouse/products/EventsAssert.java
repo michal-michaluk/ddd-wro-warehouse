@@ -29,7 +29,7 @@ public class EventsAssert implements ProductStock.Events {
     }
 
     @Override
-    public void emit(ReadyToStore event) {
+    public void emit(Registered event) {
         delegate.emit(event);
         addEvent(event);
     }

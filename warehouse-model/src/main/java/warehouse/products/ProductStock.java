@@ -39,7 +39,7 @@ public class ProductStock {
                 : Location.quarantine();
 
         LocalDateTime producedAt = LocalDateTime.now(clock);
-        ReadyToStore event = new ReadyToStore(
+        Registered event = new Registered(
                 registerNew.getPaletteLabel(),
                 registerNew.getScannedBoxes(),
                 producedAt,
@@ -84,7 +84,7 @@ public class ProductStock {
         }
     }
 
-    protected void handle(ReadyToStore event) {
+    protected void handle(Registered event) {
         stock.put(event.getPaletteLabel(), new PaletteInformation(event));
     }
 
@@ -102,7 +102,7 @@ public class ProductStock {
     }
 
     public interface Events {
-        void emit(ReadyToStore event);
+        void emit(Registered event);
 
         void emit(Stored event);
 
@@ -113,7 +113,7 @@ public class ProductStock {
 
     @Data
     private class PaletteInformation {
-        private final ReadyToStore init;
+        private final Registered init;
         private Location currentLocation = Location.production();
     }
 }

@@ -57,17 +57,17 @@ public class RegistrationAndStoringSteps {
 
     @Then("^new palette is ready to store$")
     public void newPaletteIsReadyToStore() throws Throwable {
-        events.assertFirst(ReadyToStore.class)
-                .isInstanceOf(ReadyToStore.class)
-                .extracting(ReadyToStore::getPaletteLabel)
+        events.assertFirst(Registered.class)
+                .isInstanceOf(Registered.class)
+                .extracting(Registered::getPaletteLabel)
                 .containsOnly(paletteLabel);
     }
 
     @Then("^preferred location is proposed$")
     public void preferredLocationIsProposed() throws Throwable {
-        events.assertFirst(ReadyToStore.class)
-                .isInstanceOf(ReadyToStore.class)
-                .extracting(ReadyToStore::getPreferredLocation)
+        events.assertFirst(Registered.class)
+                .isInstanceOf(Registered.class)
+                .extracting(Registered::getPreferredLocation)
                 .containsOnly(new Location("A-32-3"));
     }
 

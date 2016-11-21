@@ -11,7 +11,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import tools.SerializationVersioning;
 import warehouse.locations.Location;
 import warehouse.products.Picked;
-import warehouse.products.ReadyToStore;
+import warehouse.products.Registered;
 import warehouse.products.Stored;
 import warehouse.quality.Locked;
 
@@ -35,8 +35,8 @@ public class Persistence {
             .registerModule(new ParameterNamesModule())
             .registerModule(new JavaTimeModule());
 
-    public static final SerializationVersioning serialisation = new SerializationVersioning(
-            current(ReadyToStore.class, "ReadyToStore v1", mapper::writeValueAsString, mapper::readValue),
+    public static final SerializationVersioning serialization = new SerializationVersioning(
+            current(Registered.class, "ReadyToStore v1", mapper::writeValueAsString, mapper::readValue),
             current(Stored.class, "Stored v1", mapper::writeValueAsString, mapper::readValue),
             current(Picked.class, "Picked v2", mapper::writeValueAsString, mapper::readValue),
             obsolete(Picked.class, "Picked v1", Persistence::pickedFromV1),

@@ -5,7 +5,7 @@ import lombok.Data;
 import warehouse.PaletteLabel;
 import warehouse.locations.Location;
 import warehouse.products.Delivered;
-import warehouse.products.ReadyToStore;
+import warehouse.products.Registered;
 import warehouse.quality.Destroyed;
 import warehouse.quality.Locked;
 import warehouse.quality.Unlocked;
@@ -54,7 +54,7 @@ public class Fifo {
                     .limit(amount).collect(Collectors.toList());
         }
 
-        protected void handle(ReadyToStore event) {
+        protected void handle(Registered event) {
             add(new PaletteInfo(event.getPaletteLabel(), event.getReadyAt()));
         }
 
