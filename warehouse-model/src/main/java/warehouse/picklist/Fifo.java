@@ -2,6 +2,7 @@ package warehouse.picklist;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import warehouse.PaletteLabel;
 import warehouse.locations.Location;
 import warehouse.products.Delivered;
@@ -43,8 +44,10 @@ public class Fifo {
     }
 
     protected static class PerProduct {
-        private final PriorityQueue<PaletteInfo> queue = new PriorityQueue<>(
-                Comparator.comparing(PaletteInfo::getReadyAt));
+        private final SortedSet<PaletteInfo> queue = new TreeSet<PaletteInfo>(
+                Comparator.comparing(PaletteInfo::getReadyAt)
+                        .thenComparing(p -> p.getPaletteLabel().getId())
+        );
 
         private final Map<PaletteLabel, PaletteInfo> index = new HashMap<>();
 
@@ -91,6 +94,7 @@ public class Fifo {
     }
 
     @Data
+    @EqualsAndHashCode(of = "paletteLabel")
     protected static class PaletteInfo {
         private final PaletteLabel paletteLabel;
         private final LocalDateTime readyAt;
