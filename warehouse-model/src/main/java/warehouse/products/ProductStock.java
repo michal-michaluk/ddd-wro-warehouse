@@ -112,7 +112,7 @@ public class ProductStock {
     }
 
     @Data
-    private class PaletteInformation {
+    protected class PaletteInformation {
         private final Registered init;
         private Location currentLocation = Location.production();
     }

@@ -10,7 +10,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class BasicLocationPicker implements PreferredLocationPicker {
     private final Map<String, Location> perRefNo;
-    private final Location def = new Location("<no suggestion>");
+    private final Location def = Location.unknown();
 
     @Override
     public Location suggestFor(String refNo) {

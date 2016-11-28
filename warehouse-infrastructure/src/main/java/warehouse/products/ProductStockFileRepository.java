@@ -58,6 +58,7 @@ public class ProductStockFileRepository implements ProductStockRepository {
             return Optional.of(products.get(refNo));
         } else {
             List<Object> history = retrieve(refNo);
+            //List<ProductStock.PaletteInformation> ormEntities = retrieve(refNo);
             ProductStock stock = new ProductStock(refNo, validator, locationPicker, events, clock);
             products.put(refNo, stock);
             for (Object event : history) {
