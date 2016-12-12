@@ -7,10 +7,10 @@ import warehouse.quality.Locked;
  */
 public class ProductStockEventsHandler implements ProductStock.Events {
 
-    private final ProductStockFileRepository repository;
+    private final ProductStockExtendedRepository repository;
     private final ProductStock.Events delegate;
 
-    public ProductStockEventsHandler(ProductStockFileRepository repository, ProductStock.Events delegate) {
+    public ProductStockEventsHandler(ProductStockExtendedRepository repository, ProductStock.Events delegate) {
         this.repository = repository;
         this.delegate = delegate;
     }
@@ -42,4 +42,5 @@ public class ProductStockEventsHandler implements ProductStock.Events {
         delegate.emit(event);
         // emit outside app
     }
+
 }

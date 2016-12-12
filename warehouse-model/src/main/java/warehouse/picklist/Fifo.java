@@ -84,12 +84,16 @@ public class Fifo {
 
         private void available(PaletteLabel paletteLabel, boolean available) {
             PaletteInfo entry = index.get(paletteLabel);
-            entry.setAvailable(available);
+            if (entry != null) {
+                entry.setAvailable(available);
+            }
         }
 
         private void remove(PaletteLabel paletteLabel) {
             PaletteInfo removed = index.remove(paletteLabel);
-            queue.remove(removed);
+            if (removed != null) {
+                queue.remove(removed);
+            }
         }
     }
 

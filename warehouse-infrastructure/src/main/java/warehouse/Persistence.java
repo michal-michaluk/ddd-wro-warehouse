@@ -13,7 +13,9 @@ import warehouse.locations.Location;
 import warehouse.products.Picked;
 import warehouse.products.Registered;
 import warehouse.products.Stored;
+import warehouse.quality.Destroyed;
 import warehouse.quality.Locked;
+import warehouse.quality.Unlocked;
 
 import static tools.SerializationVersioning.current;
 import static tools.SerializationVersioning.obsolete;
@@ -28,8 +30,7 @@ public class Persistence {
             .setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
             .setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY)
-            .enable(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS)
-            .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .enable(SerializationFeature.WRITE_DATES_WITH_ZONE_ID)
             .registerModule(new Jdk8Module())
             .registerModule(new ParameterNamesModule())
@@ -40,7 +41,9 @@ public class Persistence {
             current(Stored.class, "Stored v1", mapper::writeValueAsString, mapper::readValue),
             current(Picked.class, "Picked v2", mapper::writeValueAsString, mapper::readValue),
             obsolete(Picked.class, "Picked v1", Persistence::pickedFromV1),
-            current(Locked.class, "Locked v1", mapper::writeValueAsString, mapper::readValue)
+            current(Locked.class, "Locked v1", mapper::writeValueAsString, mapper::readValue),
+            current(Unlocked.class, "Unlocked v1", mapper::writeValueAsString, mapper::readValue),
+            current(Destroyed.class, "Destroyed v1", mapper::writeValueAsString, mapper::readValue)
     );
 
     private static Picked pickedFromV1(String string, Class<Picked> type) throws Throwable {

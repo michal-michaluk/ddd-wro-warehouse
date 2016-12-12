@@ -1,0 +1,22 @@
+version: "2"
+
+volumes:
+  data:
+    driver: local
+
+services:
+  app:
+    build:
+      context: ./warehouse-infrastructure/
+      args:
+        db_url: "jdbc:postgresql://db/postgres"
+        db_user: "postgres"
+        db_pass: ""
+    links:
+      - db
+    ports:
+      - "80:4567"
+  db:
+    build: ./warehouse-db/
+    volumes:
+      - data:/var/lib/postgresql/data

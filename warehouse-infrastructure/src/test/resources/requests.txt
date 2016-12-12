@@ -1,21 +1,22 @@
 
-curl 'http://localhost:4567/api/v1/products?900300=5&900400=2'
+curl 'http://localhost/api/v1/products?900300=5&900400=2'
 
-curl 'http://localhost:4567/api/v1/products?900400=2'
-
-curl -X POST -H "Content-Type: application/json" -d \
- '{"command":"register", "label":"P-900400-0013", "boxes":["B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A"]}' \
- http://localhost:4567/api/v1/products
+curl 'http://localhost/api/v1/products?900400=2'
 
 curl -X POST -H "Content-Type: application/json" -d \
- '{"command":"pick", "label":"P-900400-0007", "user":"michal"}' \
- http://localhost:4567/api/v1/products
+ '{"command":"register", "label":"P-900400-0014", "boxes":["B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A"]}' \
+ http://localhost/api/v1/products
 
 curl -X POST -H "Content-Type: application/json" -d \
- '{"command":"store", "label":"P-900400-0001", "location":"L-XXX-3"}' \
- http://localhost:4567/api/v1/products
+ '{"command":"pick", "label":"P-900400-0014", "user":"michal"}' \
+ http://localhost/api/v1/products
 
-curl 'http://localhost:4567/api/v1/products?900400=2'
+curl -X POST -H "Content-Type: application/json" -d \
+ '{"command":"store", "label":"P-900400-0014", "location":"L-XXX-3"}' \
+ http://localhost/api/v1/products
 
+curl 'http://localhost/api/v1/products?900400=2'
 
-'{"report":"quality-21", "author":"malgosia", "date":"2016-08-18T18:14:35+02:00", "locked":["P-900400-0001", "P-900400-0002", "P-900400-0003"], "unlocked":[{"label":"P-900400-0004", "recovered":400, "scraped":50},{"label":"P-900400-0005", "recovered":400, "scraped":50}]}'
+curl -X POST -H "Content-Type: application/json" -d \
+ '{"report":"quality-21", "author":"malgosia", "date":"2016-08-18T18:14:35+02:00", "locked":["P-900400-0001", "P-900400-0002", "P-900400-0003"], "unlocked":[{"label":"P-900400-0004", "recovered":400, "scraped":50},{"label":"P-900400-0005", "recovered":400, "scraped":50}]}' \
+ http://localhost/api/v1/inbox/quality

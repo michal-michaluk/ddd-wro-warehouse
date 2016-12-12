@@ -2,7 +2,7 @@ package warehouse.picklist;
 
 import tools.MultiMethod;
 import warehouse.locations.Location;
-import warehouse.products.ProductStockFileRepository;
+import warehouse.products.ProductStockExtendedRepository;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -40,9 +40,9 @@ public class FifoViewRepository implements FifoRepository {
     private final Fifo.PaletteLocations paletteLocations;
 
     // repository dependencies
-    private final ProductStockFileRepository stocks;
+    private final ProductStockExtendedRepository stocks;
 
-    public FifoViewRepository(ProductStockFileRepository stocks) {
+    public FifoViewRepository(ProductStockExtendedRepository stocks) {
         this.stocks = stocks;
         this.paletteLocations = paletteLabel ->
                 stocks.get(paletteLabel.getRefNo())

@@ -1,4 +1,4 @@
-package tools;
+package warehouse.products.filestore;
 
 import warehouse.Persistence;
 
