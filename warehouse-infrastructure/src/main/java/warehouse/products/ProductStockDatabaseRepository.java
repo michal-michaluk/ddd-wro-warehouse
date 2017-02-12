@@ -31,7 +31,7 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     }
 
     private static final MultiMethod<ProductStock, Void> productStock$handle =
-            MultiMethod.in(ProductStock.class).method("handle")
+            MultiMethod.in(ProductStock.class).method("apply")
                     .lookup(MethodHandles.lookup())
                     .onMissingHandler(Exception::printStackTrace);
 
@@ -44,7 +44,7 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     // aggregate dependencies
     private final PaletteValidator validator;
     private final BasicLocationPicker locationPicker;
-    private final ProductStock.Events events;
+    private final ProductStock.EventsContract events;
     private final Clock clock;
 
     public ProductStockDatabaseRepository(EventMappings mappings, Sql2o sql2o) {
@@ -61,6 +61,9 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
             return Optional.of(products.get(refNo));
         } else {
             List<Object> history = retrieve(refNo);
+            if (history.isEmpty()) {
+                return Optional.empty();
+            }
             //List<ProductStock.PaletteInformation> ormEntities = retrieve(refNo);
             ProductStock stock = new ProductStock(refNo, validator, locationPicker, events, clock);
             products.put(refNo, stock);

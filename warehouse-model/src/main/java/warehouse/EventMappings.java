@@ -38,7 +38,7 @@ public class EventMappings {
     }
 
     @AllArgsConstructor
-    public class ProductStocks implements ProductStock.Events {
+    public class ProductStocks implements ProductStock.EventsContract {
 
         @Override
         public void emit(Registered event) {

@@ -32,7 +32,7 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
     }
 
     private static final MultiMethod<ProductStock, Void> productStock$handle =
-            MultiMethod.in(ProductStock.class).method("handle")
+            MultiMethod.in(ProductStock.class).method("apply")
                     .lookup(MethodHandles.lookup())
                     .onMissingHandler(Exception::printStackTrace);
 
@@ -45,7 +45,7 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
     // aggregate dependencies
     private final PaletteValidator validator;
     private final BasicLocationPicker locationPicker;
-    private final ProductStock.Events events;
+    private final ProductStock.EventsContract events;
     private final Clock clock;
 
     public ProductStockFileRepository(EventMappings mappings) {

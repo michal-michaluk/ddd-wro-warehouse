@@ -22,10 +22,20 @@ public class ProductStock {
     private String refNo;
     private PaletteValidator validator;
     private PreferredLocationPicker locationPicker;
-    private Events events;
+    private EventsContract events;
     private Clock clock;
 
     private final Map<PaletteLabel, PaletteInformation> stock = new HashMap<>();
+
+    public interface EventsContract {
+        void emit(Registered event);
+
+        void emit(Stored event);
+
+        void emit(Picked event);
+
+        void emit(Locked lock);
+    }
 
     public void registerNew(RegisterNew registerNew) {
         assert refNo.equals(registerNew.getPaletteLabel().getRefNo());
@@ -46,7 +56,7 @@ public class ProductStock {
                 suggestedLocation,
                 validation
         );
-        handle(event);
+        apply(event);
         events.emit(event);
 
         if (!validation.isValid()) {
@@ -60,7 +70,7 @@ public class ProductStock {
         Location fromLocation = stock.get(pick.getPaletteLabel()).currentLocation;
         Picked event = new Picked(pick.getPaletteLabel(), pick.getUser(),
                 fromLocation, Location.onTheMove(pick.getUser()));
-        handle(event);
+        apply(event);
         events.emit(event);
     }
 
@@ -69,7 +79,7 @@ public class ProductStock {
         Stored event = new Stored(
                 store.getPaletteLabel(),
                 store.getLocation());
-        handle(event);
+        apply(event);
         events.emit(event);
     }
 
@@ -84,31 +94,21 @@ public class ProductStock {
         }
     }
 
-    protected void handle(Registered event) {
+    protected void apply(Registered event) {
         stock.put(event.getPaletteLabel(), new PaletteInformation(event));
     }
 
-    protected void handle(Picked event) {
+    protected void apply(Picked event) {
         stock.get(event.getPaletteLabel())
                 .setCurrentLocation(event.getOnTheMoveLocation());
     }
 
-    protected void handle(Stored event) {
+    protected void apply(Stored event) {
         stock.get(event.getPaletteLabel())
                 .setCurrentLocation(event.getLocation());
     }
 
-    public void handle(Locked event) {
-    }
-
-    public interface Events {
-        void emit(Registered event);
-
-        void emit(Stored event);
-
-        void emit(Picked event);
-
-        void emit(Locked lock);
+    public void apply(Locked event) {
     }
 
     @Data

@@ -13,19 +13,19 @@ import java.util.Map;
 /**
  * Created by michal on 13.07.2016.
  */
-public class EventsAssert implements ProductStock.Events {
+public class EventsAssert implements ProductStock.EventsContract {
 
-    private final ProductStock.Events delegate;
+    private final ProductStock.EventsContract delegate;
 
     private final List<Object> events = new LinkedList<>();
     private final Map<Class<? extends Object>, Object> last = new HashMap<>();
 
-    public EventsAssert(ProductStock.Events delegate) {
+    public EventsAssert(ProductStock.EventsContract delegate) {
         this.delegate = delegate;
     }
 
     public EventsAssert() {
-        delegate = Mockito.mock(ProductStock.Events.class);
+        delegate = Mockito.mock(ProductStock.EventsContract.class);
     }
 
     @Override
@@ -65,11 +65,11 @@ public class EventsAssert implements ProductStock.Events {
     }
 
     public <T> AbstractObjectAssert<?, T> assertFirst(Class<T> type) {
-        return this.<T>assertAt(0, type);
+        return this.assertAt(0, type);
     }
 
     public <T> AbstractObjectAssert<?, T> assertLast(Class<T> type) {
-        return this.<T>assertAt(events.size() - 1, type);
+        return this.assertAt(events.size() - 1, type);
     }
 
     public void notEmitted(Class<?> eventType) {

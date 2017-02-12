@@ -25,10 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Created by michal on 13.07.2016.
  */
-public class FifoViewRepository implements FifoRepository {
+public class FifoViewProjection implements FifoRepository {
 
     private static final MultiMethod<Fifo.PerProduct, Void> perProduct$handle = MultiMethod
-            .in(Fifo.PerProduct.class).method("handle")
+            .in(Fifo.PerProduct.class).method("apply")
             .lookup(MethodHandles.lookup())
             .onMissingHandler(MultiMethod.IGNORE);
 
@@ -42,7 +42,7 @@ public class FifoViewRepository implements FifoRepository {
     // repository dependencies
     private final ProductStockExtendedRepository stocks;
 
-    public FifoViewRepository(ProductStockExtendedRepository stocks) {
+    public FifoViewProjection(ProductStockExtendedRepository stocks) {
         this.stocks = stocks;
         this.paletteLocations = paletteLabel ->
                 stocks.get(paletteLabel.getRefNo())

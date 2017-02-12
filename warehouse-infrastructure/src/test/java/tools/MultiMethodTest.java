@@ -44,7 +44,7 @@ public class MultiMethodTest {
     private boolean wasCalledProtected = false;
 
     private MultiMethod<HandlerOfManyEvents, Void> handler = MultiMethod
-            .in(HandlerOfManyEvents.class).method(void.class, "handle")
+            .in(HandlerOfManyEvents.class).method(void.class, "apply")
             .lookup(MethodHandles.lookup());
 
     @Rule

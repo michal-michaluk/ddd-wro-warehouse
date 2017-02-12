@@ -81,17 +81,17 @@ public class ProductStockBuilder {
             Registered event = new Registered(
                     paletteLabel, someBoxesFor(paletteLabel.getRefNo()), producedAt, preferredLocation
             );
-            object.handle(event);
+            object.apply(event);
             return this;
         }
 
         public History stored(PaletteLabel paletteLabel, Location location) {
-            object.handle(new Stored(paletteLabel, location));
+            object.apply(new Stored(paletteLabel, location));
             return this;
         }
 
         public History picked(PaletteLabel paletteLabel, Location location, String user) {
-            object.handle(new Picked(paletteLabel, user, location, Location.onTheMove(user)));
+            object.apply(new Picked(paletteLabel, user, location, Location.onTheMove(user)));
             return this;
         }
 

@@ -4,10 +4,8 @@ import org.sql2o.Sql2o;
 import quality.QualityReportService;
 import rest.api.v1.Inbox;
 import rest.api.v1.ProductStocks;
-import warehouse.picklist.FifoViewRepository;
+import warehouse.picklist.FifoViewProjection;
 import warehouse.products.ProductStockDatabaseRepository;
-
-import java.util.Arrays;
 
 /**
  * Created by michal on 13.07.2016.
@@ -20,7 +18,7 @@ public class Main {
         EventMappings mappings = new EventMappings();
         TLabelsFormats labels = new TLabelsFormats(0);
         ProductStockDatabaseRepository stocks = new ProductStockDatabaseRepository(mappings, database);
-        FifoViewRepository fifo = new FifoViewRepository(stocks);
+        FifoViewProjection fifo = new FifoViewProjection(stocks);
         QualityReportService quality = new QualityReportService(stocks, mappings);
         mappings.dependencies(stocks, fifo);
 

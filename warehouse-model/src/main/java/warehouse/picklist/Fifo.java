@@ -44,7 +44,7 @@ public class Fifo {
     }
 
     protected static class PerProduct {
-        private final SortedSet<PaletteInfo> queue = new TreeSet<PaletteInfo>(
+        private final SortedSet<PaletteInfo> queue = new TreeSet<>(
                 Comparator.comparing(PaletteInfo::getReadyAt)
                         .thenComparing(p -> p.getPaletteLabel().getId())
         );

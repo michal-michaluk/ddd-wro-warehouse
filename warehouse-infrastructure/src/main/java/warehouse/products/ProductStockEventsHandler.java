@@ -5,12 +5,12 @@ import warehouse.quality.Locked;
 /**
  * Created by michal on 08.06.2016.
  */
-public class ProductStockEventsHandler implements ProductStock.Events {
+public class ProductStockEventsHandler implements ProductStock.EventsContract {
 
     private final ProductStockExtendedRepository repository;
-    private final ProductStock.Events delegate;
+    private final ProductStock.EventsContract delegate;
 
-    public ProductStockEventsHandler(ProductStockExtendedRepository repository, ProductStock.Events delegate) {
+    public ProductStockEventsHandler(ProductStockExtendedRepository repository, ProductStock.EventsContract delegate) {
         this.repository = repository;
         this.delegate = delegate;
     }
