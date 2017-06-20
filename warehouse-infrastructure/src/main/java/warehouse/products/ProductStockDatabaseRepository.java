@@ -3,14 +3,14 @@ package warehouse.products;
 import lombok.Data;
 import org.sql2o.ResultSetIterable;
 import org.sql2o.Sql2o;
-import tools.MultiMethod;
+import tools.EventsApplier;
 import warehouse.EventMappings;
 import warehouse.Persistence;
 import warehouse.locations.BasicLocationPicker;
+import warehouse.quality.Locked;
 
-import java.lang.invoke.MethodHandles;
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -24,16 +24,19 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     @Data
     private static class HistoryEvent {
         private final long id;
-        private final LocalDateTime created;
+        private final Instant created;
         private final String refNo;
         private final String type;
         private final String content;
     }
 
-    private static final MultiMethod<ProductStock, Void> productStock$handle =
-            MultiMethod.in(ProductStock.class).method("apply")
-                    .lookup(MethodHandles.lookup())
-                    .onMissingHandler(Exception::printStackTrace);
+    private static final EventsApplier<ProductStock> applier =
+            EventsApplier.forType(ProductStock.class)
+                    .define(Registered.class, ProductStock::apply)
+                    .define(Stored.class, ProductStock::apply)
+                    .define(Picked.class, ProductStock::apply)
+                    .define(Locked.class, ProductStock::apply)
+                    .onMissingDefinitionSkip();
 
     // caches
     private final Map<String, ProductStock> products = new ConcurrentHashMap<>();
@@ -64,17 +67,9 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
             if (history.isEmpty()) {
                 return Optional.empty();
             }
-            //List<ProductStock.PaletteInformation> ormEntities = retrieve(refNo);
             ProductStock stock = new ProductStock(refNo, validator, locationPicker, events, clock);
+            applier.apply(stock, history);
             products.put(refNo, stock);
-            for (Object event : history) {
-                try {
-                    productStock$handle.call(stock, event);
-                } catch (Throwable throwable) {
-                    // stock <refNo> cannot replay event <event> cause <throwable>
-                    throwable.printStackTrace();
-                }
-            }
             return Optional.of(stock);
         }
     }

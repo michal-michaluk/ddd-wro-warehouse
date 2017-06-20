@@ -108,7 +108,7 @@ public class ProductStock {
                 .setCurrentLocation(event.getLocation());
     }
 
-    public void apply(Locked event) {
+    protected void apply(Locked event) {
     }
 
     @Data
