@@ -11,7 +11,10 @@ import warehouse.quality.Locked;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -22,7 +25,7 @@ import java.util.stream.StreamSupport;
 public class ProductStockDatabaseRepository implements ProductStockExtendedRepository {
 
     @Data
-    private static class HistoryEvent {
+    private static class ProductStockHistoryEvent {
         private final long id;
         private final Instant created;
         private final String refNo;
@@ -54,7 +57,7 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
         this.sql2o = sql2o;
         this.validator = new PaletteValidator();
         this.locationPicker = new BasicLocationPicker(Collections.emptyMap());
-        this.events = new ProductStockEventsHandler(this, mappings.new ProductStocks());
+        this.events = new ProductStockEventsHandler(this, mappings.productStocks());
         this.clock = Clock.systemDefaultZone();
     }
 
@@ -96,10 +99,10 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     }
 
     protected List<Object> retrieve(String refNo) {
-        try (ResultSetIterable<HistoryEvent> result = sql2o.open().createQuery(
+        try (ResultSetIterable<ProductStockHistoryEvent> result = sql2o.open().createQuery(
                 "select * from warehouse.ProductStockHistory where refNo = :refNo order by id")
                 .addParameter("refNo", refNo)
-                .executeAndFetchLazy(HistoryEvent.class)) {
+                .executeAndFetchLazy(ProductStockHistoryEvent.class)) {
             return StreamSupport.stream(result.spliterator(), false)
                     .map(entry -> Persistence.serialization.deserialize(entry.getContent(), entry.getType()))
                     .collect(Collectors.toList());

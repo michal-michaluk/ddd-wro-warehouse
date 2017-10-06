@@ -15,6 +15,14 @@ public class EventMappings {
     private ProductStockRepository stocks;
     private FifoRepository fifo;
 
+    public ExternalEvents externalEvents() {
+        return new ExternalEvents();
+    }
+
+    public ProductStock.EventsContract productStocks() {
+        return new ProductStocks();
+    }
+
     @AllArgsConstructor
     public class ExternalEvents {
 
@@ -38,7 +46,7 @@ public class EventMappings {
     }
 
     @AllArgsConstructor
-    public class ProductStocks implements ProductStock.EventsContract {
+    private class ProductStocks implements ProductStock.EventsContract {
 
         @Override
         public void emit(Registered event) {
@@ -59,7 +67,7 @@ public class EventMappings {
         }
     }
 
-    protected void dependencies(ProductStockRepository stocks, FifoRepository fifo) {
+    void dependencies(ProductStockRepository stocks, FifoRepository fifo) {
         this.stocks = stocks;
         this.fifo = fifo;
     }

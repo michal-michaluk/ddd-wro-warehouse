@@ -51,7 +51,7 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
     public ProductStockFileRepository(EventMappings mappings) {
         this.validator = new PaletteValidator();
         this.locationPicker = new BasicLocationPicker(Collections.emptyMap());
-        this.events = new ProductStockEventsHandler(this, mappings.new ProductStocks());
+        this.events = new ProductStockEventsHandler(this, mappings.productStocks());
         this.clock = Clock.systemDefaultZone();
     }
 

@@ -17,7 +17,7 @@ public class QualityReportService {
 
     public QualityReportService(ProductStockExtendedRepository stocks, EventMappings mappings) {
         this.stocks = stocks;
-        this.events = mappings.new ExternalEvents();
+        this.events = mappings.externalEvents();
     }
 
     public void process(QualityReport report) {
