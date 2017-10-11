@@ -57,23 +57,23 @@ public class Fifo {
                     .limit(amount).collect(Collectors.toList());
         }
 
-        protected void handle(Registered event) {
+        protected void apply(Registered event) {
             add(new PaletteInfo(event.getPaletteLabel(), event.getReadyAt()));
         }
 
-        protected void handle(Locked event) {
+        protected void apply(Locked event) {
             available(event.getPaletteLabel(), false);
         }
 
-        protected void handle(Unlocked event) {
+        protected void apply(Unlocked event) {
             available(event.getPaletteLabel(), true);
         }
 
-        protected void handle(Delivered event) {
+        protected void apply(Delivered event) {
             remove(event.getPaletteLabel());
         }
 
-        protected void handle(Destroyed event) {
+        protected void apply(Destroyed event) {
             remove(event.getPaletteLabel());
         }
 

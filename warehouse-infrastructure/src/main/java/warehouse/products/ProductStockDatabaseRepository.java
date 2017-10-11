@@ -3,6 +3,7 @@ package warehouse.products;
 import lombok.Data;
 import org.sql2o.ResultSetIterable;
 import org.sql2o.Sql2o;
+import tools.AgentQueue;
 import tools.EventsApplier;
 import warehouse.EventMappings;
 import warehouse.Persistence;
@@ -42,7 +43,7 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
                     .onMissingDefinitionSkip();
 
     // caches
-    private final Map<String, ProductStock> products = new ConcurrentHashMap<>();
+    private final Map<String, ProductStockAgent> products = new ConcurrentHashMap<>();
 
     // repository dependencies
     private final Sql2o sql2o;
@@ -62,19 +63,16 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     }
 
     @Override
-    public Optional<ProductStock> get(String refNo) {
-        if (products.containsKey(refNo)) {
-            return Optional.of(products.get(refNo));
-        } else {
+    public Optional<ProductStockAgent> get(String refNo) {
+        return Optional.ofNullable(products.computeIfAbsent(refNo, key -> {
             List<Object> history = retrieve(refNo);
             if (history.isEmpty()) {
-                return Optional.empty();
+                return null;
             }
             ProductStock stock = new ProductStock(refNo, validator, locationPicker, events, clock);
             applier.apply(stock, history);
-            products.put(refNo, stock);
-            return Optional.of(stock);
-        }
+            return new ProductStockAgent(stock, new AgentQueue());
+        }));
     }
 
     public List<Object> readEvents(String refNo) {

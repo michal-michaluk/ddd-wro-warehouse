@@ -4,15 +4,17 @@ curl 'http://localhost/api/v1/products?900300=5&900400=2'
 curl 'http://localhost/api/v1/products?900400=2'
 
 curl -X POST -H "Content-Type: application/json" -d \
- '{"command":"register", "label":"P-900400-0080", "boxes":["B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A"]}' \
+ '{"command":"register", "label":"P-900400-0082", "boxes":["B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A", "B-900400-25-A"]}' \
+ http://localhost/api/v1/products
+
+curl 'http://localhost/api/v1/products/P-900400-0082/location'
+
+curl -X POST -H "Content-Type: application/json" -d \
+ '{"command":"pick", "label":"P-900400-0081", "user":"michal"}' \
  http://localhost/api/v1/products
 
 curl -X POST -H "Content-Type: application/json" -d \
- '{"command":"pick", "label":"P-900400-0080", "user":"michal"}' \
- http://localhost/api/v1/products
-
-curl -X POST -H "Content-Type: application/json" -d \
- '{"command":"store", "label":"P-900400-0080", "location":"L-XXX-3"}' \
+ '{"command":"store", "label":"P-900400-0081", "location":"L-XXX-3"}' \
  http://localhost/api/v1/products
 
 curl 'http://localhost/api/v1/products?900400=2'

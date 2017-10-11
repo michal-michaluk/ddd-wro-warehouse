@@ -5,6 +5,6 @@ import java.util.Optional;
 /**
  * Created by michal on 14.08.2016.
  */
-public interface ProductStockRepository {
-    Optional<ProductStock> get(String refNo);
+public interface ProductStockAgentRepository {
+    Optional<ProductStockAgent> get(String refNo);
 }

@@ -17,10 +17,7 @@ import warehouse.Labels;
 import warehouse.locations.Location;
 import warehouse.picklist.FifoRepository;
 import warehouse.picklist.Order;
-import warehouse.products.Pick;
-import warehouse.products.ProductStockRepository;
-import warehouse.products.RegisterNew;
-import warehouse.products.Store;
+import warehouse.products.*;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -43,7 +40,7 @@ public class ProductStocks {
             .registerModule(new JavaTimeModule());
 
     private Labels labels;
-    private ProductStockRepository stocks;
+    private ProductStockAgentRepository stocks;
     private FifoRepository fifo;
 
     public void exposeApi() {
@@ -61,7 +58,7 @@ public class ProductStocks {
         Spark.get("/api/v1/products/:palette/location", RequestStream.query(RequestStream
                 .map((request, response) -> labels.scanPalette(request.params("palette")))
                 .lookup((request, response, label) -> stocks.get(label.getRefNo()))
-                .query((request, response, aggregate, label) -> aggregate.getLocation(label))
+                .query((request, response, aggregate, label) -> aggregate.getLocationSync(label))
                 .map((request, response, location) -> location.getLocation())
         ));
 

@@ -7,12 +7,14 @@ import warehouse.quality.Destroyed;
 import warehouse.quality.Locked;
 import warehouse.quality.Unlocked;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Created by michal on 16.07.2016.
  */
 public class EventMappings {
 
-    private ProductStockRepository stocks;
+    private ProductStockAgentRepository stocks;
     private FifoRepository fifo;
 
     public ExternalEvents externalEvents() {
@@ -50,7 +52,7 @@ public class EventMappings {
 
         @Override
         public void emit(Registered event) {
-            fifo.handle(event.getPaletteLabel().getRefNo(), event);
+            async(() -> fifo.handle(event.getPaletteLabel().getRefNo(), event));
         }
 
         @Override
@@ -63,12 +65,16 @@ public class EventMappings {
 
         @Override
         public void emit(Locked event) {
-            fifo.handle(event.getPaletteLabel().getRefNo(), event);
+            async(() -> fifo.handle(event.getPaletteLabel().getRefNo(), event));
         }
     }
 
-    void dependencies(ProductStockRepository stocks, FifoRepository fifo) {
+    void dependencies(ProductStockAgentRepository stocks, FifoRepository fifo) {
         this.stocks = stocks;
         this.fifo = fifo;
+    }
+
+    void async(Runnable handler) {
+        CompletableFuture.runAsync(handler);
     }
 }

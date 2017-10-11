@@ -56,32 +56,32 @@ public class FifoBuilder {
 
         public History newPalette(PaletteLabel paletteLabel, LocalDateTime producedAt, Location storedAt) {
             Fifo.PerProduct product = product(paletteLabel.getRefNo());
-            product.handle(new Registered(paletteLabel, Collections.emptyList(), producedAt, storedAt));
+            product.apply(new Registered(paletteLabel, Collections.emptyList(), producedAt, storedAt));
             locations.put(paletteLabel, storedAt);
             return this;
         }
 
         public History delivered(PaletteLabel paletteLabel) {
             Fifo.PerProduct product = product(paletteLabel.getRefNo());
-            product.handle(new Delivered(paletteLabel));
+            product.apply(new Delivered(paletteLabel));
             return this;
         }
 
         public History locked(PaletteLabel paletteLabel) {
             Fifo.PerProduct product = product(paletteLabel.getRefNo());
-            product.handle(new Locked(paletteLabel));
+            product.apply(new Locked(paletteLabel));
             return this;
         }
 
         public History unlocked(PaletteLabel paletteLabel, int recovered, int scraped) {
             Fifo.PerProduct product = product(paletteLabel.getRefNo());
-            product.handle(new Unlocked(paletteLabel, recovered, scraped));
+            product.apply(new Unlocked(paletteLabel, recovered, scraped));
             return this;
         }
 
         public History destroyed(PaletteLabel paletteLabel) {
             Fifo.PerProduct product = product(paletteLabel.getRefNo());
-            product.handle(new Destroyed(paletteLabel));
+            product.apply(new Destroyed(paletteLabel));
             return this;
         }
     }

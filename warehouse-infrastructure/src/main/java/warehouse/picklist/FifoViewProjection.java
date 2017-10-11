@@ -10,19 +10,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Querying and influencing events behaviour:
- * lot of stored products without any activity
- * queried once a day for multiple products
- * lot of Registered and Delivered during day for selected products
- * queried multiple times over the day
- * <p>
+ * Manages in memory projection of fifo ordered picklists.
+ * Domain charatceristics of fifo ordered picklists view:
+ * <ul>
+ * <li>there is a lot of stored products without any activity, neither query nor update</li>
+ * <li>products scheduled today for delivery (limited subset of products) will be queried multiple times</li>
+ * <li>products produced/stored today will update view content but don't need to be queried</li>
+ * </ul>
  * technical chooses:
- * view exists temporally lookup memory for subset of products
- * products loaded on demand reading all stock history (no view snapshot for now)
- * when products is memory, view listens on events
- * when products not lookup memory, repo filters out events
- * memory content cleared once a day
- * <p>
+ * <ul>
+ * <li>view exists temporally in memory for subset of products (delivered/queried today)</li>
+ * <li>when products is loaded on demand, product stock history is loaded (no view snapshot for now)</li>
+ * <li>when products is already in memory, view listens on events and keeps memory state up to date</li>
+ * <li>when products is not loaded in memory, repo ignores events</li>
+ * <li>memory content is cleared once a day</li>
+ * </ul>
  * Created by michal on 13.07.2016.
  */
 public class FifoViewProjection implements FifoRepository {
@@ -46,7 +48,7 @@ public class FifoViewProjection implements FifoRepository {
         this.stocks = stocks;
         this.paletteLocations = paletteLabel ->
                 stocks.get(paletteLabel.getRefNo())
-                        .map(productStock -> productStock.getLocation(paletteLabel))
+                        .map(productStock -> productStock.getLocationSync(paletteLabel))
                         .orElse(Location.unknown());
         Fifo.Products products = refNo ->
                 this.products.computeIfAbsent(refNo, this::load);

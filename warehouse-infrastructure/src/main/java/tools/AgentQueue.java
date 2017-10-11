@@ -4,6 +4,7 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AgentQueue {
@@ -42,6 +43,21 @@ public class AgentQueue {
         tasks.offer(new QueryTask<>(future, query));
         execute();
         return future;
+    }
+
+    public <T> T querySync(Query<T> query) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        tasks.offer(new QueryTask<>(future, query));
+        execute();
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e.getCause());
+        } catch (ExecutionException e) {
+            throw e.getCause() instanceof RuntimeException
+                    ? ((RuntimeException) e.getCause())
+                    : new RuntimeException(e.getCause());
+        }
     }
 
     private void execute() {

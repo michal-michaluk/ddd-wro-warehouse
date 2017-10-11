@@ -1,14 +1,12 @@
 package warehouse.products.filestore;
 
 import lombok.Data;
+import tools.AgentQueue;
 import tools.MultiMethod;
 import warehouse.EventMappings;
 import warehouse.Persistence;
 import warehouse.locations.BasicLocationPicker;
-import warehouse.products.PaletteValidator;
-import warehouse.products.ProductStock;
-import warehouse.products.ProductStockEventsHandler;
-import warehouse.products.ProductStockExtendedRepository;
+import warehouse.products.*;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Clock;
@@ -37,7 +35,7 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
                     .onMissingHandler(Exception::printStackTrace);
 
     // caches
-    private final Map<String, ProductStock> products = new ConcurrentHashMap<>();
+    private final Map<String, ProductStockAgent> products = new ConcurrentHashMap<>();
 
     // repository dependencies
     private final FileStore store = new FileStore();
@@ -56,14 +54,13 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
     }
 
     @Override
-    public Optional<ProductStock> get(String refNo) {
-        if (products.containsKey(refNo)) {
-            return Optional.of(products.get(refNo));
-        } else {
+    public Optional<ProductStockAgent> get(String refNo) {
+        return Optional.ofNullable(products.computeIfAbsent(refNo, key -> {
             List<Object> history = retrieve(refNo);
-            //List<ProductStock.PaletteInformation> ormEntities = retrieve(refNo);
+            if (history.isEmpty()) {
+                return null;
+            }
             ProductStock stock = new ProductStock(refNo, validator, locationPicker, events, clock);
-            products.put(refNo, stock);
             for (Object event : history) {
                 try {
                     productStock$handle.call(stock, event);
@@ -72,8 +69,8 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
                     throwable.printStackTrace();
                 }
             }
-            return Optional.of(stock);
-        }
+            return new ProductStockAgent(stock, new AgentQueue());
+        }));
     }
 
     public List<Object> readEvents(String refNo) {

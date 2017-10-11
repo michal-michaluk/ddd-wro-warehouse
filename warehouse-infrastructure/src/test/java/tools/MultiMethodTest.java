@@ -20,19 +20,19 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 public class MultiMethodTest {
 
     public class HandlerOfManyEvents {
-        public void handle(Locked event) {
+        public void apply(Locked event) {
             wasCalled = true;
         }
 
-        protected void handle(Delivered event) {
+        protected void apply(Delivered event) {
             wasCalledProtected = true;
         }
 
-        private void handle(Unlocked event) {
+        private void apply(Unlocked event) {
             // don't expect it to work
         }
 
-        public void handle(Destroyed event) throws Exception {
+        public void apply(Destroyed event) throws Exception {
             throw new BusinessException();
         }
     }
@@ -44,7 +44,7 @@ public class MultiMethodTest {
     private boolean wasCalledProtected = false;
 
     private MultiMethod<HandlerOfManyEvents, Void> handler = MultiMethod
-            .in(HandlerOfManyEvents.class).method(void.class, "handle")
+            .in(HandlerOfManyEvents.class).method(void.class, "apply")
             .lookup(MethodHandles.lookup());
 
     @Rule
