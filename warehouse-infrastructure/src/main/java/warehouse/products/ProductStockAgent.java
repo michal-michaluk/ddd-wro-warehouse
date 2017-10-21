@@ -11,12 +11,18 @@ import java.util.concurrent.CompletionStage;
  */
 public class ProductStockAgent {
 
+    private final String refNo;
     private final AgentQueue queue;
     private final ProductStock object;
 
-    public ProductStockAgent(ProductStock object, AgentQueue queue) {
+    public ProductStockAgent(String refNo, ProductStock object, AgentQueue queue) {
+        this.refNo = refNo;
         this.object = object;
         this.queue = queue;
+    }
+
+    public String getRefNo() {
+        return refNo;
     }
 
     public CompletionStage<?> registerNew(RegisterNew registerNew) {

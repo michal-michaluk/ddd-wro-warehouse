@@ -4,13 +4,14 @@ import lombok.Data;
 import tools.AgentQueue;
 import tools.MultiMethod;
 import warehouse.EventMappings;
+import warehouse.PaletteLabel;
 import warehouse.Persistence;
 import warehouse.locations.BasicLocationPicker;
 import warehouse.products.*;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
     @Data
     public static class EventEntry {
         private final UUID id;
-        private final LocalDateTime created;
+        private final Instant created;
         private final String refNo;
         private final String type;
         private final String json;
@@ -55,12 +56,12 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
 
     @Override
     public Optional<ProductStockAgent> get(String refNo) {
-        return Optional.ofNullable(products.computeIfAbsent(refNo, key -> {
-            List<Object> history = retrieve(refNo);
+        return Optional.ofNullable(products.computeIfAbsent(refNo, id -> {
+            List<Object> history = retrieve(id);
             if (history.isEmpty()) {
                 return null;
             }
-            ProductStock stock = new ProductStock(refNo, validator, locationPicker, events, clock);
+            ProductStock stock = new ProductStock(id, validator, locationPicker, events, clock);
             for (Object event : history) {
                 try {
                     productStock$handle.call(stock, event);
@@ -69,7 +70,7 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
                     throwable.printStackTrace();
                 }
             }
-            return new ProductStockAgent(stock, new AgentQueue());
+            return new ProductStockAgent(id, stock, new AgentQueue());
         }));
     }
 
@@ -78,12 +79,12 @@ public class ProductStockFileRepository implements ProductStockExtendedRepositor
     }
 
     @Override
-    public void persist(String refNo, Object event) {
+    public void persist(PaletteLabel storageUnit, Object event) {
         String json = Persistence.serialization.serialize(event);
         String alias = Persistence.serialization.of(event.getClass()).getAlias();
         EventEntry entry = new EventEntry(
-                UUID.randomUUID(), LocalDateTime.now(), refNo, alias, json);
-        store.append(refNo, entry);
+                UUID.randomUUID(), Instant.now(clock), storageUnit.getRefNo(), alias, json);
+        store.append(storageUnit.getRefNo(), entry);
     }
 
     protected List<Object> retrieve(String refNo) {

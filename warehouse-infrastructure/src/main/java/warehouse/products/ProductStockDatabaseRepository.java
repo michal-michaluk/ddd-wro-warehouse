@@ -1,11 +1,15 @@
 package warehouse.products;
 
 import lombok.Data;
+import org.sql2o.Connection;
+import org.sql2o.Query;
 import org.sql2o.ResultSetIterable;
 import org.sql2o.Sql2o;
 import tools.AgentQueue;
 import tools.EventsApplier;
 import warehouse.EventMappings;
+import warehouse.OpsSupport;
+import warehouse.PaletteLabel;
 import warehouse.Persistence;
 import warehouse.locations.BasicLocationPicker;
 import warehouse.quality.Locked;
@@ -30,8 +34,10 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
         private final long id;
         private final Instant created;
         private final String refNo;
+        private final String unit;
         private final String type;
         private final String content;
+        private final boolean inStock;
     }
 
     private static final EventsApplier<ProductStock> applier =
@@ -47,6 +53,7 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
 
     // repository dependencies
     private final Sql2o sql2o;
+    private final OpsSupport support;
 
     // aggregate dependencies
     private final PaletteValidator validator;
@@ -54,8 +61,9 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     private final ProductStock.EventsContract events;
     private final Clock clock;
 
-    public ProductStockDatabaseRepository(EventMappings mappings, Sql2o sql2o) {
+    public ProductStockDatabaseRepository(EventMappings mappings, Sql2o sql2o, OpsSupport support) {
         this.sql2o = sql2o;
+        this.support = support;
         this.validator = new PaletteValidator();
         this.locationPicker = new BasicLocationPicker(Collections.emptyMap());
         this.events = new ProductStockEventsHandler(this, mappings.productStocks());
@@ -64,14 +72,14 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
 
     @Override
     public Optional<ProductStockAgent> get(String refNo) {
-        return Optional.ofNullable(products.computeIfAbsent(refNo, key -> {
-            List<Object> history = retrieve(refNo);
+        return Optional.of(products.computeIfAbsent(refNo, id -> {
+            List<Object> history = retrieve(id);
             if (history.isEmpty()) {
-                return null;
+                support.initialisingStockForNewProduct(id, validator, locationPicker);
             }
-            ProductStock stock = new ProductStock(refNo, validator, locationPicker, events, clock);
+            ProductStock stock = new ProductStock(id, validator, locationPicker, events, clock);
             applier.apply(stock, history);
-            return new ProductStockAgent(stock, new AgentQueue());
+            return new ProductStockAgent(id, stock, new AgentQueue());
         }));
     }
 
@@ -80,15 +88,16 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     }
 
     @Override
-    public void persist(String refNo, Object event) {
+    public void persist(PaletteLabel storageUnit, Object event) {
         String json = Persistence.serialization.serialize(event);
         String alias = Persistence.serialization.of(event.getClass()).getAlias();
 
-        try (org.sql2o.Connection connection = sql2o.beginTransaction()) {
+        try (Connection connection = sql2o.beginTransaction()) {
             connection.createQuery(
-                    "insert into warehouse.ProductStockHistory(refNo, type, content) " +
-                            "values (:refNo, :type, cast(:content AS json))")
-                    .addParameter("refNo", refNo)
+                    "insert into warehouse.ProductStockHistory(refNo, unit, type, content) " +
+                            "values (:refNo, :unit, :type, cast(:content AS json))")
+                    .addParameter("refNo", storageUnit.getRefNo())
+                    .addParameter("unit", storageUnit.getId())
                     .addParameter("type", alias)
                     .addParameter("content", json)
                     .executeUpdate();
@@ -97,10 +106,12 @@ public class ProductStockDatabaseRepository implements ProductStockExtendedRepos
     }
 
     protected List<Object> retrieve(String refNo) {
-        try (ResultSetIterable<ProductStockHistoryEvent> result = sql2o.open().createQuery(
-                "select * from warehouse.ProductStockHistory where refNo = :refNo order by id")
-                .addParameter("refNo", refNo)
-                .executeAndFetchLazy(ProductStockHistoryEvent.class)) {
+        try (Connection connection = sql2o.open();
+             Query query = connection.createQuery(
+                     "select * from warehouse.ProductStockHistory where refNo = :refNo order by id");
+             ResultSetIterable<ProductStockHistoryEvent> result = query
+                     .addParameter("refNo", refNo)
+                     .executeAndFetchLazy(ProductStockHistoryEvent.class)) {
             return StreamSupport.stream(result.spliterator(), false)
                     .map(entry -> Persistence.serialization.deserialize(entry.getContent(), entry.getType()))
                     .collect(Collectors.toList());

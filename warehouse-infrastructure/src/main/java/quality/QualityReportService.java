@@ -23,19 +23,19 @@ public class QualityReportService {
     public void process(QualityReport report) {
         for (PaletteLabel label : report.getLocked()) {
             Locked event = new Locked(label);
-            stocks.persist(label.getRefNo(), event);
+            stocks.persist(label, event);
             events.emit(event);
         }
 
         for (QualityReport.Recovered status : report.getRecovered()) {
             Unlocked event = new Unlocked(status.getLabel(), status.getRecovered(), status.getScraped());
-            stocks.persist(status.getLabel().getRefNo(), event);
+            stocks.persist(status.getLabel(), event);
             events.emit(event);
         }
 
         for (PaletteLabel label : report.getDestroyed()) {
             Destroyed event = new Destroyed(label);
-            stocks.persist(label.getRefNo(), event);
+            stocks.persist(label, event);
             events.emit(event);
         }
     }

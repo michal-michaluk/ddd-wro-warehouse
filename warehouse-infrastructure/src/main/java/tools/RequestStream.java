@@ -68,8 +68,13 @@ public class RequestStream {
     }
 
     @FunctionalInterface
-    public interface TerminalConsumer<AGGREGATE, INPUT> {
-        void apply(Request request, Response response, AGGREGATE aggregate, INPUT input) throws Exception;
+    public interface AggregateConsumer<AGGREGATE, INPUT> {
+        void accept(Request request, Response response, AGGREGATE aggregate, INPUT input) throws Exception;
+    }
+
+    @FunctionalInterface
+    public interface StandaloneConsumer<INPUT> {
+        void accept(Request request, Response response, INPUT input) throws Exception;
     }
 
     @FunctionalInterface
@@ -96,6 +101,14 @@ public class RequestStream {
             return  (request, response, in) -> {
                 OUTPUT output = apply(request, response, in);
                 consumer.accept(output);
+                return null;
+            };
+        }
+
+        default Mapper<INPUT, Void> command(StandaloneConsumer<OUTPUT> consumer) {
+            return  (request, response, in) -> {
+                OUTPUT output = apply(request, response, in);
+                consumer.accept(request, response, output);
                 return null;
             };
         }
@@ -198,7 +211,7 @@ public class RequestStream {
             };
         }
 
-        public Mapper<PREINPUT, Void> command(TerminalConsumer<LOOKEDUP, INPUT> execute) {
+        public Mapper<PREINPUT, Void> command(AggregateConsumer<LOOKEDUP, INPUT> execute) {
             return (request, response, in) -> {
                 INPUT input;
                 Optional<LOOKEDUP> lookedup;
@@ -213,10 +226,10 @@ public class RequestStream {
                     onLookupError.apply(request, response, input);
                 } else {
                     if (onExecutionError == null) {
-                        execute.apply(request, response, lookedup.get(), input);
+                        execute.accept(request, response, lookedup.get(), input);
                     } else {
                         try {
-                            execute.apply(request, response, lookedup.get(), input);
+                            execute.accept(request, response, lookedup.get(), input);
                         } catch (Exception e) {
                             onExecutionError.handle(e, request, response);
                         }
@@ -230,10 +243,7 @@ public class RequestStream {
         public LOOKEDUP apply(Request request, Response response, PREINPUT preinput) throws Exception {
             INPUT input = composed.apply(request, response, preinput);
             Optional<LOOKEDUP> aggregate = lookup.apply(request, response, input);
-            if (aggregate.isPresent()) {
-                return aggregate.get();
-            }
-            return null;
+            return aggregate.orElse(null);
         }
     }
 

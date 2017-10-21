@@ -16,6 +16,7 @@ public class EventMappings {
 
     private ProductStockAgentRepository stocks;
     private FifoRepository fifo;
+    private OpsSupport support;
 
     public ExternalEvents externalEvents() {
         return new ExternalEvents();
@@ -42,7 +43,9 @@ public class EventMappings {
 
         public void emit(Delivered event) {
             stocks.get(event.getPaletteLabel().getRefNo())
-                    .ifPresent(productStock -> productStock.delivered(event));
+                    .ifPresent(productStock -> productStock.delivered(event)
+                            .handle((object, throwable) -> support.appliedExternalEventOnProductStock(productStock, event, throwable))
+                    );
             fifo.handle(event.getPaletteLabel().getRefNo(), event);
         }
     }
@@ -69,9 +72,10 @@ public class EventMappings {
         }
     }
 
-    void dependencies(ProductStockAgentRepository stocks, FifoRepository fifo) {
+    void dependencies(ProductStockAgentRepository stocks, FifoRepository fifo, OpsSupport support) {
         this.stocks = stocks;
         this.fifo = fifo;
+        this.support = support;
     }
 
     void async(Runnable handler) {

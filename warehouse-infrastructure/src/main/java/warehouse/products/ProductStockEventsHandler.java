@@ -17,28 +17,28 @@ public class ProductStockEventsHandler implements ProductStock.EventsContract {
 
     @Override
     public void emit(Registered event) {
-        repository.persist(event.getPaletteLabel().getRefNo(), event);
+        repository.persist(event.getPaletteLabel(), event);
         delegate.emit(event);
         // emit outside app
     }
 
     @Override
     public void emit(Stored event) {
-        repository.persist(event.getPaletteLabel().getRefNo(), event);
+        repository.persist(event.getPaletteLabel(), event);
         delegate.emit(event);
         // emit outside app
     }
 
     @Override
     public void emit(Picked event) {
-        repository.persist(event.getPaletteLabel().getRefNo(), event);
+        repository.persist(event.getPaletteLabel(), event);
         delegate.emit(event);
         // emit outside app
     }
 
     @Override
     public void emit(Locked event) {
-        repository.persist(event.getPaletteLabel().getRefNo(), event);
+        repository.persist(event.getPaletteLabel(), event);
         delegate.emit(event);
         // emit outside app
     }

@@ -9,5 +9,7 @@
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <logger name="warehouse.Endpoints" level="INFO" />
+    <logger name="warehouse.OpsSupport.PRODUCT_STOCK" level="DEBUG"/>
+    <logger name="warehouse.OpsSupport.FIFO_VIEW" level="DEBUG"/>
+    <logger name="warehouse.OpsSupport.QUALITY_REPORT" level="DEBUG"/>
 </configuration>

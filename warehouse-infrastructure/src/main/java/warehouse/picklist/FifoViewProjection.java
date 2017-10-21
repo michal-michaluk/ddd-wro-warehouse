@@ -1,6 +1,7 @@
 package warehouse.picklist;
 
 import tools.MultiMethod;
+import warehouse.OpsSupport;
 import warehouse.locations.Location;
 import warehouse.products.ProductStockExtendedRepository;
 
@@ -43,8 +44,9 @@ public class FifoViewProjection implements FifoRepository {
 
     // repository dependencies
     private final ProductStockExtendedRepository stocks;
+    private final OpsSupport support;
 
-    public FifoViewProjection(ProductStockExtendedRepository stocks) {
+    public FifoViewProjection(ProductStockExtendedRepository stocks, OpsSupport support) {
         this.stocks = stocks;
         this.paletteLocations = paletteLabel ->
                 stocks.get(paletteLabel.getRefNo())
@@ -53,6 +55,7 @@ public class FifoViewProjection implements FifoRepository {
         Fifo.Products products = refNo ->
                 this.products.computeIfAbsent(refNo, this::load);
         this.fifo = new Fifo(paletteLocations, products);
+        this.support = support;
     }
 
     @Override
@@ -67,8 +70,7 @@ public class FifoViewProjection implements FifoRepository {
             try {
                 perProduct$handle.call(product, event);
             } catch (Throwable throwable) {
-                // for fifo <refNo> cannot reply event <event> cause <throwable>
-                throwable.printStackTrace();
+                support.failedToApplyEventOnFifo(refNo, event, throwable);
             }
         }
     }
@@ -84,8 +86,7 @@ public class FifoViewProjection implements FifoRepository {
             try {
                 perProduct$handle.call(product, event);
             } catch (Throwable throwable) {
-                // for fifo <refNo> cannot reply event <event> cause <throwable>
-                throwable.printStackTrace();
+                support.failedToReplayEventOnFifo(refNo, event, throwable);
             }
         }
         return product;

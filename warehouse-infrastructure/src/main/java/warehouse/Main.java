@@ -14,15 +14,16 @@ public class Main {
 
     public static void main(String[] args) {
         Sql2o database = new Sql2o(args[0], args[1], args[2]);
+        OpsSupport support = new OpsSupport();
 
         EventMappings mappings = new EventMappings();
         TLabelsFormats labels = new TLabelsFormats(0);
-        ProductStockDatabaseRepository stocks = new ProductStockDatabaseRepository(mappings, database);
-        FifoViewProjection fifo = new FifoViewProjection(stocks);
+        ProductStockDatabaseRepository stocks = new ProductStockDatabaseRepository(mappings, database, support);
+        FifoViewProjection fifo = new FifoViewProjection(stocks, support);
         QualityReportService quality = new QualityReportService(stocks, mappings);
-        mappings.dependencies(stocks, fifo);
+        mappings.dependencies(stocks, fifo, support);
 
-        new ProductStocks(labels, stocks, fifo).exposeApi();
-        new Inbox(labels, quality).exposeApi();
+        new ProductStocks(labels, stocks, fifo, support).exposeApi();
+        new Inbox(labels, quality, support).exposeApi();
     }
 }

@@ -14,6 +14,7 @@ import spark.Response;
 import spark.Spark;
 import tools.RequestStream;
 import warehouse.Labels;
+import warehouse.OpsSupport;
 import warehouse.locations.Location;
 import warehouse.picklist.FifoRepository;
 import warehouse.picklist.Order;
@@ -42,6 +43,7 @@ public class ProductStocks {
     private Labels labels;
     private ProductStockAgentRepository stocks;
     private FifoRepository fifo;
+    private OpsSupport support;
 
     public void exposeApi() {
         Spark.get("/api/v1/products", RequestStream.query(RequestStream
@@ -58,7 +60,7 @@ public class ProductStocks {
         Spark.get("/api/v1/products/:palette/location", RequestStream.query(RequestStream
                 .map((request, response) -> labels.scanPalette(request.params("palette")))
                 .lookup((request, response, label) -> stocks.get(label.getRefNo()))
-                .query((request, response, aggregate, label) -> aggregate.getLocationSync(label))
+                .query((request, response, stock, label) -> stock.getLocationSync(label))
                 .map((request, response, location) -> location.getLocation())
         ));
 
@@ -72,7 +74,11 @@ public class ProductStocks {
                                         .map(box -> labels.scanBox(box.asText())).collect(Collectors.toList()))
                         )
                         .lookup((request, response, register) -> stocks.get(register.getPaletteLabel().getRefNo()))
-                        .command((request, response, aggregate, register) -> aggregate.registerNew(register))
+                        .command((request, response, stock, register) -> stock.registerNew(register)
+                                .handle((object, throwable) -> support.executedCommandOnProductStock(
+                                        request, stock, register, throwable
+                                ))
+                        )
                 )
                 .when("pick", RequestStream
                         .map((Request request, Response response, JsonNode json) -> new Pick(
@@ -82,7 +88,11 @@ public class ProductStocks {
                         .lookup((request, response, pick) ->
                                 stocks.get(pick.getPaletteLabel().getRefNo())
                         )
-                        .command((request, response, aggregate, pick) -> aggregate.pick(pick))
+                        .command((request, response, stock, pick) -> stock.pick(pick)
+                                .handle((object, throwable) -> support.executedCommandOnProductStock(
+                                        request, stock, pick, throwable
+                                ))
+                        )
                 )
                 .when("store", RequestStream
                         .map((Request request, Response response, JsonNode json) -> new Store(
@@ -90,7 +100,11 @@ public class ProductStocks {
                                 new Location(json.path("location").asText()))
                         )
                         .lookup((request, response, store) -> stocks.get(store.getPaletteLabel().getRefNo()))
-                        .command((request, response, aggregate, store) -> aggregate.store(store))
+                        .command((request, response, stock, store) -> stock.store(store)
+                                .handle((object, throwable) -> support.executedCommandOnProductStock(
+                                        request, stock, store, throwable
+                                ))
+                        )
                 )
         ));
     }
