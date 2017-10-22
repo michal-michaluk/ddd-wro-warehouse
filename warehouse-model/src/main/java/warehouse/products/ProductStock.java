@@ -47,15 +47,15 @@ public class ProductStock {
         Set<String> violations = new HashSet<>();
         BoxLabel first = registerNew.getScannedBoxes().get(0);
 
-        if (!registerNew.getScannedBoxes().isEmpty()) {
+        if (registerNew.getScannedBoxes().isEmpty()) {
             violations.add("Palette without boxes is cannot be registered");
         }
-        if (registerNew.getScannedBoxes().stream().allMatch(box ->
+        if (!registerNew.getScannedBoxes().stream().allMatch(box ->
                 first.getRefNo().equals(box.getRefNo())
                         && first.getBoxType().equals(box.getBoxType()))) {
             violations.add("Not all boxes have matching product");
         }
-        if (registerNew.getPaletteLabel().getRefNo().equals(first.getRefNo())) {
+        if (!registerNew.getPaletteLabel().getRefNo().equals(first.getRefNo())) {
             violations.add("Palette label not match box label");
         }
         ValidationResult validation = new ValidationResult(violations);
