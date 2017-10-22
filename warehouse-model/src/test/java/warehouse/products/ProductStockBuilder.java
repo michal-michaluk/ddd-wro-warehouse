@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 public class ProductStockBuilder {
 
     private final String refNo;
-    private PaletteValidator validator = new PaletteValidator();
     private PreferredLocationPicker locationsPicker = new BasicLocationPicker(Collections.emptyMap());
     private EventsAssert events = new EventsAssert();
     private Clock clock = Clock.systemDefaultZone();
@@ -39,7 +38,7 @@ public class ProductStockBuilder {
     }
 
     public ProductStock build() {
-        return new ProductStock(refNo, validator, locationsPicker, events, clock);
+        return new ProductStock(refNo, locationsPicker, events, clock);
     }
 
     public ProductStockBuilder locationsPicker(RefNoLocation... locations) {

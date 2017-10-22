@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import warehouse.locations.PreferredLocationPicker;
-import warehouse.products.PaletteValidator;
 import warehouse.products.ProductStockAgent;
 
 import java.util.Optional;
@@ -20,9 +19,9 @@ public class OpsSupport {
     private static final Logger FIFO_VIEW = LoggerFactory.getLogger("warehouse.OpsSupport.FIFO_VIEW");
     private static final Logger QUALITY_REPORT = LoggerFactory.getLogger("warehouse.OpsSupport.QUALITY_REPORT");
 
-    public void initialisingStockForNewProduct(String refNo, PaletteValidator validator, PreferredLocationPicker locationPicker) {
+    public void initialisingStockForNewProduct(String refNo, PreferredLocationPicker locationPicker) {
         PRODUCT_STOCK.info("{}: initialising stock for new refNo: {}, default setting: {}, {}",
-                refNo, refNo, toSimpleName(validator), toSimpleName(locationPicker));
+                refNo, refNo, toSimpleName(locationPicker));
     }
 
     public <T> T executedCommandOnProductStock(Request request, ProductStockAgent stock, Object command, Throwable throwable) {

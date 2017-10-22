@@ -32,7 +32,6 @@ public class RegistrationAndStoringSteps {
     @Before
     public void setUp() throws Exception {
         object = ProductStockBuilder.forRefNo("900300")
-                .validator(new PaletteValidator())
                 .locationsPicker(l("900300", new Location("A-32-3")))
                 .events(events)
                 .build();

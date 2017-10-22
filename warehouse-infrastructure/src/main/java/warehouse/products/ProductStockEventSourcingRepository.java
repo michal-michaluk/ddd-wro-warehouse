@@ -35,7 +35,6 @@ public class ProductStockEventSourcingRepository implements ProductStockAgentRep
     private final OpsSupport support;
 
     // aggregate dependencies
-    private final PaletteValidator validator;
     private final BasicLocationPicker locationPicker;
     private final ProductStock.EventsContract events;
     private final Clock clock;
@@ -43,7 +42,6 @@ public class ProductStockEventSourcingRepository implements ProductStockAgentRep
     public ProductStockEventSourcingRepository(EventMappings mappings, ProductStockEventStore eventStore, OpsSupport support) {
         this.eventStore = eventStore;
         this.support = support;
-        this.validator = new PaletteValidator();
         this.locationPicker = new BasicLocationPicker(Collections.emptyMap());
         this.events = mappings.productStocks();
         this.clock = Clock.systemDefaultZone();
@@ -54,10 +52,10 @@ public class ProductStockEventSourcingRepository implements ProductStockAgentRep
         return Optional.of(products.computeIfAbsent(refNo, id -> {
             List<Object> history = eventStore.readEventsInStock(id);
             if (history.isEmpty()) {
-                support.initialisingStockForNewProduct(id, validator, locationPicker);
+                support.initialisingStockForNewProduct(id, locationPicker);
             }
             ProductStockEventsHandler handler = new ProductStockEventsHandler(events);
-            ProductStock stock = new ProductStock(id, validator, locationPicker, handler, clock);
+            ProductStock stock = new ProductStock(id, locationPicker, handler, clock);
             applier.apply(stock, history);
             return new ProductStockAgent(id, stock, handler, new AgentQueue());
         }));

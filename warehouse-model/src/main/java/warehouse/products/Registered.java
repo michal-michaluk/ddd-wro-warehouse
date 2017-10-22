@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static warehouse.products.PaletteValidator.ValidationResult.valid;
+import static warehouse.products.ValidationResult.valid;
 
 /**
  * Created by michal on 08.06.2016.
@@ -22,7 +22,7 @@ public class Registered {
     private final List<BoxLabel> scannedBoxes;
     private final LocalDateTime readyAt;
     private final Location preferredLocation;
-    private final PaletteValidator.ValidationResult validationResult;
+    private final ValidationResult validationResult;
 
     public Registered(PaletteLabel paletteLabel, List<BoxLabel> scannedBoxes,
                       LocalDateTime readyAt, Location preferredLocation) {
