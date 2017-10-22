@@ -2,7 +2,7 @@ package quality;
 
 import warehouse.EventMappings;
 import warehouse.PaletteLabel;
-import warehouse.products.ProductStockExtendedRepository;
+import warehouse.products.ProductStockEventStore;
 import warehouse.quality.Destroyed;
 import warehouse.quality.Locked;
 import warehouse.quality.Unlocked;
@@ -12,10 +12,10 @@ import warehouse.quality.Unlocked;
  */
 public class QualityReportService {
 
-    private final ProductStockExtendedRepository stocks;
+    private final ProductStockEventStore stocks;
     private final EventMappings.ExternalEvents events;
 
-    public QualityReportService(ProductStockExtendedRepository stocks, EventMappings mappings) {
+    public QualityReportService(ProductStockEventStore stocks, EventMappings mappings) {
         this.stocks = stocks;
         this.events = mappings.externalEvents();
     }

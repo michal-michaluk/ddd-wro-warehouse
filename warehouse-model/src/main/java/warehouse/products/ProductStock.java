@@ -6,6 +6,7 @@ import warehouse.PaletteLabel;
 import warehouse.locations.Location;
 import warehouse.locations.PreferredLocationPicker;
 import warehouse.products.PaletteValidator.ValidationResult;
+import warehouse.quality.Destroyed;
 import warehouse.quality.Locked;
 
 import java.time.Clock;
@@ -84,6 +85,11 @@ public class ProductStock {
     }
 
     public void delivered(Delivered event) {
+        stock.remove(event.getPaletteLabel());
+    }
+
+    public void destroyed(Destroyed event) {
+        stock.remove(event.getPaletteLabel());
     }
 
     public Location getLocation(PaletteLabel paletteLabel) {

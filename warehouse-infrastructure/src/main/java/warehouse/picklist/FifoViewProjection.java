@@ -3,7 +3,8 @@ package warehouse.picklist;
 import tools.MultiMethod;
 import warehouse.OpsSupport;
 import warehouse.locations.Location;
-import warehouse.products.ProductStockExtendedRepository;
+import warehouse.products.ProductStockAgentRepository;
+import warehouse.products.ProductStockEventStore;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FifoViewProjection implements FifoRepository {
 
-    private static final MultiMethod<Fifo.PerProduct, Void> perProduct$handle = MultiMethod
+    private static final MultiMethod<Fifo.PerProduct, Void> eventsApplier = MultiMethod
             .in(Fifo.PerProduct.class).method("apply")
             .lookup(MethodHandles.lookup())
             .onMissingHandler(MultiMethod.IGNORE);
@@ -43,10 +44,12 @@ public class FifoViewProjection implements FifoRepository {
     private final Fifo.PaletteLocations paletteLocations;
 
     // repository dependencies
-    private final ProductStockExtendedRepository stocks;
+    private final ProductStockEventStore stockEvents;
+    private final ProductStockAgentRepository stocks;
     private final OpsSupport support;
 
-    public FifoViewProjection(ProductStockExtendedRepository stocks, OpsSupport support) {
+    public FifoViewProjection(ProductStockEventStore stockEvents, ProductStockAgentRepository stocks, OpsSupport support) {
+        this.stockEvents = stockEvents;
         this.stocks = stocks;
         this.paletteLocations = paletteLabel ->
                 stocks.get(paletteLabel.getRefNo())
@@ -68,7 +71,7 @@ public class FifoViewProjection implements FifoRepository {
         if (products.containsKey(refNo)) {
             Fifo.PerProduct product = products.get(refNo);
             try {
-                perProduct$handle.call(product, event);
+                eventsApplier.call(product, event);
             } catch (Throwable throwable) {
                 support.failedToApplyEventOnFifo(refNo, event, throwable);
             }
@@ -80,11 +83,11 @@ public class FifoViewProjection implements FifoRepository {
     }
 
     private Fifo.PerProduct load(String refNo) {
-        List<Object> events = stocks.readEvents(refNo);
+        List<Object> events = stockEvents.readEventsInStock(refNo);
         Fifo.PerProduct product = new Fifo.PerProduct();
         for (Object event : events) {
             try {
-                perProduct$handle.call(product, event);
+                eventsApplier.call(product, event);
             } catch (Throwable throwable) {
                 support.failedToReplayEventOnFifo(refNo, event, throwable);
             }
