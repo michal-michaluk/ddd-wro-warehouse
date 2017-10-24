@@ -2,7 +2,6 @@ package warehouse.products;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import warehouse.BoxLabel;
 import warehouse.PaletteLabel;
 import warehouse.locations.Location;
 import warehouse.locations.PreferredLocationPicker;
@@ -12,9 +11,7 @@ import warehouse.quality.Locked;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by michal on 08.06.2016.
@@ -24,7 +21,9 @@ public class ProductStock {
 
     private String refNo;
     private PreferredLocationPicker locationPicker;
+    private StorageUnitValidator validator;
     private EventsContract events;
+
     private Clock clock;
 
     private final Map<PaletteLabel, PaletteInformation> stock = new HashMap<>();
@@ -44,21 +43,7 @@ public class ProductStock {
         if (stock.containsKey(registerNew.getPaletteLabel())) {
             return;
         }
-        Set<String> violations = new HashSet<>();
-        BoxLabel first = registerNew.getScannedBoxes().get(0);
-
-        if (registerNew.getScannedBoxes().isEmpty()) {
-            violations.add("Palette without boxes is cannot be registered");
-        }
-        if (!registerNew.getScannedBoxes().stream().allMatch(box ->
-                first.getRefNo().equals(box.getRefNo())
-                        && first.getBoxType().equals(box.getBoxType()))) {
-            violations.add("Not all boxes have matching product");
-        }
-        if (!registerNew.getPaletteLabel().getRefNo().equals(first.getRefNo())) {
-            violations.add("Palette label not match box label");
-        }
-        ValidationResult validation = new ValidationResult(violations);
+        ValidationResult validation = validator.validate(registerNew);
 
         Location suggestedLocation = validation.isValid()
                 ? locationPicker.suggestFor(registerNew.getPaletteLabel().getRefNo())

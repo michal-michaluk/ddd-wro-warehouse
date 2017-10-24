@@ -18,6 +18,7 @@ public class OpsSupport {
     private static final Logger PRODUCT_STOCK = LoggerFactory.getLogger("warehouse.OpsSupport.PRODUCT_STOCK");
     private static final Logger FIFO_VIEW = LoggerFactory.getLogger("warehouse.OpsSupport.FIFO_VIEW");
     private static final Logger QUALITY_REPORT = LoggerFactory.getLogger("warehouse.OpsSupport.QUALITY_REPORT");
+    private static final Logger MASTER_DATA = LoggerFactory.getLogger("warehouse.OpsSupport.MASTER_DATA");
 
     public void initialisingStockForNewProduct(String refNo, PreferredLocationPicker locationPicker) {
         PRODUCT_STOCK.info("{}: initialising stock for new refNo: {}, default setting: {}, {}",
@@ -92,6 +93,10 @@ public class OpsSupport {
     public void failedToExecuteCommandOnQualityReportService(Request request, Object command, Throwable throwable) {
         QUALITY_REPORT.error("cannot execute command: {}, content: {}, parsed from REST body: {}",
                 toSimpleName(command), command, toString(request), throwable);
+    }
+
+    public void failedToDeserializeCartDefinition(String refNo, String json) {
+        MASTER_DATA.error("{}: failed To deserialize CartDefinition from json: '{}'", refNo, json);
     }
 
     private String toSimpleName(Object object) {

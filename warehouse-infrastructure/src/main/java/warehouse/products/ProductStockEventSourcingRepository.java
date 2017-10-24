@@ -4,6 +4,7 @@ import tools.AgentQueue;
 import tools.EventsApplier;
 import warehouse.EventMappings;
 import warehouse.OpsSupport;
+import warehouse.carts.CartDefinitionRepository;
 import warehouse.locations.BasicLocationPicker;
 import warehouse.quality.Destroyed;
 import warehouse.quality.Locked;
@@ -38,10 +39,12 @@ public class ProductStockEventSourcingRepository implements ProductStockAgentRep
     private final BasicLocationPicker locationPicker;
     private final ProductStock.EventsContract events;
     private final Clock clock;
+    private final CartDefinitionRepository cartDefinitions;
 
-    public ProductStockEventSourcingRepository(EventMappings mappings, ProductStockEventStore eventStore, OpsSupport support) {
+    public ProductStockEventSourcingRepository(EventMappings mappings, ProductStockEventStore eventStore, OpsSupport support, CartDefinitionRepository cartDefinitions) {
         this.eventStore = eventStore;
         this.support = support;
+        this.cartDefinitions = cartDefinitions;
         this.locationPicker = new BasicLocationPicker(Collections.emptyMap());
         this.events = mappings.productStocks();
         this.clock = Clock.systemDefaultZone();
@@ -55,10 +58,17 @@ public class ProductStockEventSourcingRepository implements ProductStockAgentRep
                 support.initialisingStockForNewProduct(id, locationPicker);
             }
             ProductStockEventsHandler handler = new ProductStockEventsHandler(events);
-            ProductStock stock = new ProductStock(id, locationPicker, handler, clock);
+            StorageUnitValidator validator = pickValidator(refNo);
+            ProductStock stock = new ProductStock(id, locationPicker, validator, handler, clock);
             applier.apply(stock, history);
             return new ProductStockAgent(id, stock, handler, new AgentQueue());
         }));
+    }
+
+    private StorageUnitValidator pickValidator(String refNo) {
+        return cartDefinitions.getValidator(refNo)
+                .map(StorageUnitValidator.class::cast)
+                .orElseGet(PaletteValidator::new);
     }
 
     class ProductStockEventsHandler implements ProductStock.EventsContract {

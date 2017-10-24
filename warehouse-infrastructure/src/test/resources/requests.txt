@@ -22,3 +22,15 @@ curl 'http://localhost/api/v1/products?900400=2'
 curl -X POST -H "Content-Type: application/json" -d \
  '{"report":"quality-21", "author":"malgosia", "date":"2016-08-18T18:14:35+02:00", "locked":["P-900400-0001", "P-900400-0002", "P-900400-0003"], "unlocked":[{"label":"P-900400-0004", "recovered":400, "scraped":50},{"label":"P-900400-0005", "recovered":400, "scraped":50}]}' \
  http://localhost/api/v1/inbox/quality/reports
+
+
+curl 'http://localhost/api/v1/masterdata/cartDefinitions/900900'
+
+curl -X POST -H "Content-Type: application/json" -d \
+'["900901", "900902", "900903", "900904", "900905", "900906", "900907"]' \
+http://localhost/api/v1/masterdata/cartDefinitions/900900
+
+curl -X POST -H "Content-Type: application/json" -d \
+ '{"command":"register", "label":"P-900900-0002", "boxes":["B-900901-1-POCKET", "B-900902-1-POCKET", "B-900903-1-POCKET", "B-900904-1-POCKET", "B-900905-1-POCKET", "B-900906-1-POCKET", "B-900907-1-POCKET"]}' \
+ http://localhost/api/v1/products
+

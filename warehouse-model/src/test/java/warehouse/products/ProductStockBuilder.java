@@ -28,6 +28,7 @@ public class ProductStockBuilder {
     private PreferredLocationPicker locationsPicker = new BasicLocationPicker(Collections.emptyMap());
     private EventsAssert events = new EventsAssert();
     private Clock clock = Clock.systemDefaultZone();
+    private PaletteValidator validator = new PaletteValidator();
 
     public static ProductStockBuilder forRefNo(String refNo) {
         return new ProductStockBuilder(refNo);
@@ -38,7 +39,7 @@ public class ProductStockBuilder {
     }
 
     public ProductStock build() {
-        return new ProductStock(refNo, locationsPicker, events, clock);
+        return new ProductStock(refNo, locationsPicker, validator, events, clock);
     }
 
     public ProductStockBuilder locationsPicker(RefNoLocation... locations) {
